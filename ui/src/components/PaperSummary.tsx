@@ -1,9 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { MaxLengthText } from '@allenai/varnish/components/MaxLengthText';
 
 import { Paper } from '../magellan';
+import { PaperTitle } from './PaperTitle';
+import { PaperAbstract } from './PaperAbstract';
 
 interface Props {
     paper: Paper;
@@ -18,32 +19,23 @@ export const PaperSummary = ({ paper, disableLink }: Props) => {
     const titleText = paper.metadata.title === '' ? 'Unknown Title' : paper.metadata.title;
     return (
         <>
-            <Title>
+            <PaperTitle>
                 {!disableLink ? (
                     <Link to={`/paper/${paper.paper_id}`}>{titleText}</Link>
                 ) : (
                     titleText
                 )}
-            </Title>
-            <div>{authorNames}</div>
-            <Abstract>
+            </PaperTitle>
+            <div>
+                <strong>{authorNames}</strong>
+            </div>
+            <PaperAbstract>
                 {abstractText === '' ? (
                     'No Abstract'
                 ) : (
                     <MaxLengthText maxLength={250}>{abstractText}</MaxLengthText>
                 )}
-            </Abstract>
+            </PaperAbstract>
         </>
     );
 };
-
-const Title = styled.h4`
-    margin: 0;
-`;
-
-const Abstract = styled.div`
-    ${({ theme }) => `
-        max-width: 80ch;
-        margin: ${theme.spacing.xs} 0 0;
-    `}
-`;

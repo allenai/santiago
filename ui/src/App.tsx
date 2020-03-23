@@ -13,6 +13,7 @@ import {
 
 import Search from './pages/Search';
 import PaperDetail from './pages/PaperDetail';
+import MetaDetail from './pages/MetaDetail';
 
 export default class App extends React.PureComponent<RouteComponentProps> {
     render() {
@@ -35,6 +36,7 @@ export default class App extends React.PureComponent<RouteComponentProps> {
                         <Content>
                             <Route path="/" component={Search} exact />
                             <Route path="/paper/:id" component={PaperDetail} exact />
+                            <Route path="/meta/:id" component={MetaDetail} exact />
                         </Content>
                         <Footer />
                     </Layout>

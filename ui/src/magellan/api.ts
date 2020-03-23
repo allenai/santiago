@@ -1,5 +1,7 @@
+/* eslint-disable camelcase */
+
 import { Query } from './Query';
-import { Paper } from './models';
+import { Paper, MetadataEntry } from './models';
 
 // Note: there's a number of additional fields that aren't modeled.
 interface EsDoc<T> {
@@ -51,5 +53,33 @@ export async function getPaperById(id: string): Promise<Paper> {
         throw new NoPaperFoundError(id);
     }
     const doc: EsDoc<Paper> = await resp.json();
+    return doc._source;
+}
+
+export async function searchForMetadata(query: Query): Promise<SearchResults<MetadataEntry>> {
+    const resp = await fetch(`/api/meta/search?${query.toQueryString()}`);
+    const data: EsSearchResponse<MetadataEntry> = await resp.json();
+    // We change the shape of the data a bit as to not couple things too tightly to
+    // Elasticsearch
+    return {
+        items: data.hits.hits.map(d => ({ id: d._id, ...d._source })),
+        total_results: data.hits.total.value,
+        took_ms: data.took,
+        query: query
+    };
+}
+
+class NoMetaEntryFoundError extends Error {
+    constructor(paper_id: string) {
+        super(`No metadata with id: ${paper_id}`);
+    }
+}
+
+export async function getMetaById(id: string): Promise<MetadataEntry> {
+    const resp = await fetch(`/api/meta/${id}`);
+    if (resp.status === 404) {
+        throw new NoMetaEntryFoundError(id);
+    }
+    const doc: EsDoc<MetadataEntry> = await resp.json();
     return doc._source;
 }

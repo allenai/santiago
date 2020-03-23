@@ -1,34 +1,41 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { useHistory, RouteComponentProps } from 'react-router';
-import { Input } from '@allenai/varnish/components';
+import { Tabs as VTabs, Input } from '@allenai/varnish/components';
 import { List, Spin, Icon } from 'antd';
 
 import * as magellan from '../magellan';
-import { Container, PaperSummary } from '../components';
+import { Container, PaperSummary, MetadataSummary } from '../components';
 
 const Search = (props: RouteComponentProps) => {
     const history = useHistory();
     const query = magellan.Query.fromLocation(props.location);
 
-    const [results, setResults] = React.useState<
+    const [paperSearchResults, setPaperSearchResults] = React.useState<
         magellan.SearchResults<magellan.Paper> | undefined
     >();
+    const [metaSearchResults, setMetaSearchResults] = React.useState<
+        magellan.SearchResults<magellan.MetadataEntry> | undefined
+    >();
     React.useEffect(() => {
-        setResults(undefined);
-        magellan.searchForPapers(query).then(resp => {
-            if (resp.query.equals(query)) {
-                setResults(resp);
+        setPaperSearchResults(undefined);
+        Promise.all([magellan.searchForPapers(query), magellan.searchForMetadata(query)]).then(
+            ([paperResp, metaResp]) => {
+                if (paperResp.query.equals(query)) {
+                    setPaperSearchResults(paperResp);
+                }
+                if (metaResp.query.equals(query)) {
+                    setMetaSearchResults(metaResp);
+                }
             }
-        });
+        );
     }, [query.toQueryString()]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const nf = new Intl.NumberFormat('en-US', { minimumSignificantDigits: 2 });
     return (
         <Container>
             <Input.Search
                 name="q"
-                placeholder="Search for papers"
+                placeholder="Enter a search query"
                 defaultValue={query.q}
                 onSearch={q => {
                     const newQuery = new magellan.Query(q);
@@ -36,25 +43,43 @@ const Search = (props: RouteComponentProps) => {
                 }}
             />
             <Results>
-                {results ? (
-                    <>
-                        <Meta>
-                            Found {nf.format(results.total_results)} results in{' '}
-                            {nf.format(results.took_ms / 1000)}s
-                        </Meta>
-                        <List
-                            size="large"
-                            itemLayout="vertical"
-                            dataSource={results.items}
-                            renderItem={paper => (
-                                <Item>
-                                    <PaperSummary paper={paper} />
-                                </Item>
-                            )}
-                        />
-                    </>
-                ) : (
+                {!paperSearchResults || !metaSearchResults ? (
                     <Spin indicator={<Icon type="loading" />} />
+                ) : (
+                    <Tabs>
+                        {paperSearchResults ? (
+                            <Tabs.TabPane
+                                key="papers"
+                                tab={`Papers (${paperSearchResults.total_results})`}>
+                                <List
+                                    size="large"
+                                    itemLayout="vertical"
+                                    dataSource={paperSearchResults.items}
+                                    renderItem={paper => (
+                                        <Item>
+                                            <PaperSummary paper={paper} />
+                                        </Item>
+                                    )}
+                                />
+                            </Tabs.TabPane>
+                        ) : null}
+                        {metaSearchResults ? (
+                            <Tabs.TabPane
+                                key="meta"
+                                tab={`Metadata (${metaSearchResults.total_results})`}>
+                                <List
+                                    size="large"
+                                    itemLayout="vertical"
+                                    dataSource={metaSearchResults.items}
+                                    renderItem={meta => (
+                                        <Item>
+                                            <MetadataSummary meta={meta} />
+                                        </Item>
+                                    )}
+                                />
+                            </Tabs.TabPane>
+                        ) : null}
+                    </Tabs>
                 )}
             </Results>
         </Container>
@@ -71,21 +96,14 @@ const Item = styled(List.Item)`
     ${({ theme }) => `
         && {
             padding: ${theme.spacing.lg} ${theme.spacing.md};
-
-            &:first-child {
-                border-top: 1px solid ${theme.palette.border.main};
-            }
         }
     `}
 `;
 
-const Meta = styled.div`
-    ${({ theme }) => `
-        margin: 0 0 ${theme.spacing.xs};
-        padding: 0 ${theme.spacing.md};
-        color: ${theme.palette.text.secondary}
-        font-weight: bold;
-    `}
+const Tabs = styled(VTabs)`
+    .ant-tabs-bar {
+        margin: 0;
+    }
 `;
 
 export default Search;

@@ -24,6 +24,7 @@ def create_api() -> Blueprint:
 
     cluster_url = 'https://search-magellan-public-dev-pwta5a6pazn5d77gdrgqqzaeda.us-west-2.es.amazonaws.com'
     papers_index = 'paper_v1'
+    meta_index = 'metadata_v1';
 
     @api.route('/paper/search')
     def search_papers():
@@ -55,6 +56,36 @@ def create_api() -> Blueprint:
     @api.route('/paper/<string:id>')
     def get_paper(id: str):
         resp = requests.get(f'{cluster_url}/{papers_index}/_doc/{id}')
+        return jsonify(resp.json()), resp.status_code
+
+    @api.route('/meta/search')
+    def search_meta():
+        queryText = request.args.get('q')
+        query = {
+            'query': {
+                'simple_query_string': {
+                    'query': queryText,
+                    'fields': [
+                        'title^3',
+                        'abstract^2',
+                        'authors',
+                        'journal'
+                    ]
+                }
+            }
+        }
+        resp = requests.get(
+            f'{cluster_url}/{meta_index}/_search',
+            data=json.dumps(query),
+            headers = {
+                'Content-Type': 'application/json'
+            }
+        )
+        return jsonify(resp.json()), resp.status_code
+
+    @api.route('/meta/<string:id>')
+    def get_meta(id: str):
+        resp = requests.get(f'{cluster_url}/{meta_index}/_doc/{id}')
         return jsonify(resp.json()), resp.status_code
 
     return api
