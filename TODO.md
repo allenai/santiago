@@ -5,7 +5,7 @@
 - [x] Paper detail page
 - [x] Search Metadata
 - [x] Metadata detail page
-- [x] Add Google Analytics
+- [ ] Add Google Analytics
 
 ## Value Adds
 - [ ] Add pagination to search
