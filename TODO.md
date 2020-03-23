@@ -10,8 +10,11 @@
 ## Value Adds
 - [ ] Add pagination to search
 - [ ] Document supported query syntax in the UI
+- [ ] Easily collapsible JSON
 
 ## Follow Up
 - [ ] Share internally for feedback and make tweaks
+- [ ] Change the domain to `covid.apps.allenai.org`.
 - [ ] Deploy a production cluster and switch the UI to use that instance
-- [ ] Announce the existence of the cluster
+- [ ] Launch
+- [ ] Document and announce the cluster
