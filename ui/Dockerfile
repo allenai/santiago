@@ -21,6 +21,10 @@ ENV NODE_ENV $NODE_ENV
 ARG BABEL_ENV=development
 ENV BABEL_ENV $BABEL_ENV
 
+# The Google Analytics identifier.
+ARG GA_UA
+ENV REACT_APP_GA_UA $GA_UA
+
 # Build the UI
 RUN yarn build
 

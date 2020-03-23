@@ -10,7 +10,6 @@ import { Container, PaperSummary, MetadataSummary } from '../components';
 const Search = (props: RouteComponentProps) => {
     const history = useHistory();
     const query = magellan.Query.fromLocation(props.location);
-
     const [paperSearchResults, setPaperSearchResults] = React.useState<
         magellan.SearchResults<magellan.Paper> | undefined
     >();
@@ -31,6 +30,7 @@ const Search = (props: RouteComponentProps) => {
         );
     }, [query.toQueryString()]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const nf = new Intl.NumberFormat();
     return (
         <Container>
             <Input.Search
@@ -50,7 +50,7 @@ const Search = (props: RouteComponentProps) => {
                         {paperSearchResults ? (
                             <Tabs.TabPane
                                 key="papers"
-                                tab={`Papers (${paperSearchResults.total_results})`}>
+                                tab={`Papers (${nf.format(paperSearchResults.total_results)})`}>
                                 <List
                                     size="large"
                                     itemLayout="vertical"
@@ -66,7 +66,7 @@ const Search = (props: RouteComponentProps) => {
                         {metaSearchResults ? (
                             <Tabs.TabPane
                                 key="meta"
-                                tab={`Metadata (${metaSearchResults.total_results})`}>
+                                tab={`Metadata (${nf.format(metaSearchResults.total_results)})`}>
                                 <List
                                     size="large"
                                     itemLayout="vertical"

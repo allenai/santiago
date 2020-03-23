@@ -49,7 +49,8 @@ steps:
     '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
     '.',
     '--build-arg', 'NODE_ENV=production',
-    '--build-arg', 'BABEL_ENV=production'
+    '--build-arg', 'BABEL_ENV=production',
+    '--build-arg', 'GA_UA=$_REACT_APP_GA_UA'
   ]
   waitFor: [ 'ui.pull' ]
   dir: 'ui'
