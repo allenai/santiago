@@ -12,6 +12,7 @@ import {
 } from '@allenai/varnish/components';
 
 import Search from './pages/Search';
+import PaperDetail from './pages/PaperDetail';
 
 export default class App extends React.PureComponent<RouteComponentProps> {
     render() {
@@ -32,7 +33,8 @@ export default class App extends React.PureComponent<RouteComponentProps> {
                             </HeaderColumns>
                         </Header>
                         <Content>
-                            <Route path="/" component={Search} />
+                            <Route path="/" component={Search} exact />
+                            <Route path="/paper/:id" component={PaperDetail} exact />
                         </Content>
                         <Footer />
                     </Layout>

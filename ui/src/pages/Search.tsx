@@ -1,10 +1,11 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { useHistory, RouteComponentProps } from 'react-router';
-import { Input, MaxLengthText } from '@allenai/varnish/components';
+import { Input } from '@allenai/varnish/components';
 import { List, Spin, Icon } from 'antd';
 
 import * as magellan from '../magellan';
+import { Container, PaperSummary } from '../components';
 
 const Search = (props: RouteComponentProps) => {
     const history = useHistory();
@@ -20,7 +21,7 @@ const Search = (props: RouteComponentProps) => {
                 setResults(resp);
             }
         });
-    }, [query.toQueryString()]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [query.toQueryString()]);
 
     const nf = new Intl.NumberFormat('en-US', { minimumSignificantDigits: 2 });
     return (
@@ -38,8 +39,8 @@ const Search = (props: RouteComponentProps) => {
                 {results ? (
                     <>
                         <Meta>
-                            Found {nf.format(results.total_results)} results in
-                            {' '}{nf.format(results.took_ms/1000)}s
+                            Found {nf.format(results.total_results)} results in{' '}
+                            {nf.format(results.took_ms / 1000)}s
                         </Meta>
                         <List
                             size="large"
@@ -47,23 +48,7 @@ const Search = (props: RouteComponentProps) => {
                             dataSource={results.items}
                             renderItem={paper => (
                                 <Item>
-                                    <Title>
-                                        {paper.metadata.title === ""
-                                            ? "Unknown Title"
-                                            : paper.metadata.title}
-                                    </Title>
-                                    <div>
-                                        {paper.metadata.authors.map(a => ([
-                                            a.first,
-                                            a.middle.join(' '),
-                                            a.last
-                                        ].join(' '))).join(', ')}
-                                    </div>
-                                    <Abstract>
-                                        <MaxLengthText maxLength={250}>
-                                            {paper.abstract.map(a => a.text).join(' ')}
-                                        </MaxLengthText>
-                                    </Abstract>
+                                    <PaperSummary paper={paper} />
                                 </Item>
                             )}
                         />
@@ -76,26 +61,11 @@ const Search = (props: RouteComponentProps) => {
     );
 };
 
-const Container = styled.div`
-    max-width: 90ch;
-`;
-
-const Abstract = styled.div`
-    ${({ theme }) => `
-        max-width: 80ch;
-        margin: ${theme.spacing.xs} 0 0;
-    `}
-`;
-
 const Results = styled.div`
     ${({ theme }) => `
         padding: ${theme.spacing.lg} 0 0;
     `}
 `;
-
-const Title = styled.h4`
-    margin: 0;
-`
 
 const Item = styled(List.Item)`
     ${({ theme }) => `

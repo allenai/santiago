@@ -22,35 +22,39 @@ def create_api() -> Blueprint:
     def index() -> (str, int):
         return '', 204
 
-    @api.route('/papers/search', methods=['GET'])
+    cluster_url = 'https://search-magellan-public-dev-pwta5a6pazn5d77gdrgqqzaeda.us-west-2.es.amazonaws.com'
+    papers_index = 'paper_v1'
+
+    @api.route('/paper/search')
     def search_papers():
         queryText = request.args.get('q')
         query = {
-            "query": {
-                "simple_query_string": {
-                    "query": queryText,
-                    "fields": [
-                        "metadata.title^4",
-                        "abstract.text^3",
-                        "body.text^2",
-                        "authors.first",
-                        "authors.middle",
-                        "authors.last"
+            'query': {
+                'simple_query_string': {
+                    'query': queryText,
+                    'fields': [
+                        'metadata.title^4',
+                        'abstract.text^3',
+                        'body.text^2',
+                        'authors.first',
+                        'authors.middle',
+                        'authors.last'
                     ]
                 }
             }
         }
-        url = "https://search-magellan-public-dev-pwta5a6pazn5d77gdrgqqzaeda.us-west-2.es.amazonaws.com/paper_v1/_search"
-        req = requests.Request(
-                'GET',
-                url,
-                data=json.dumps(query),
-                headers={ "Content-Type": "application/json" }
-              ).prepare()
-        s = requests.Session()
-        resp = s.send(req)
-        status = resp.status_code
-        data = resp.json()
-        return jsonify(data), resp.status_code
+        resp = requests.get(
+            f'{cluster_url}/{papers_index}/_search',
+            data=json.dumps(query),
+            headers = {
+                'Content-Type': 'application/json'
+            }
+        )
+        return jsonify(resp.json()), resp.status_code
+
+    @api.route('/paper/<string:id>')
+    def get_paper(id: str):
+        resp = requests.get(f'{cluster_url}/{papers_index}/_doc/{id}')
+        return jsonify(resp.json()), resp.status_code
 
     return api
