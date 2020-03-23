@@ -21,7 +21,7 @@ const Search = (props: RouteComponentProps) => {
                 setResults(resp);
             }
         });
-    }, [query.toQueryString()]);
+    }, [query.toQueryString()]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const nf = new Intl.NumberFormat('en-US', { minimumSignificantDigits: 2 });
     return (
