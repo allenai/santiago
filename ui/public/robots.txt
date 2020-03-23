@@ -3,10 +3,9 @@
 #
 # Our models can require a significant amount of computation, and crawling the
 # API comes at our expense and can even cause applications to fail.
-# We will block unauthorized crawling of the API.
+# We will block unauthorized crawling.
 #
-# Privacy Policy: https://allenai.org/privacy-policy.html
-# Terms and Conditions of use: https://allenai.org/terms.html
+# Privacy Policy: https://allenai.org/privacy-policy
+# Terms and Conditions of use: https://allenai.org/terms
 
 User-agent: *
-Disallow: /api

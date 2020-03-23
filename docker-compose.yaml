@@ -2,6 +2,15 @@ version: '3'
 services:
     sonar:
         build: ./sonar
+    api:
+        build: ./api
+        volumes:
+            - './api:/usr/local/src/skiff/app/api'
+        environment:
+            # This ensures that errors are printed as they occur, which
+            # makes debugging easier.
+            - 'PYTHONUNBUFFERED=1'
+            - 'LOG_LEVEL=DEBUG'
     ui:
         build: ./ui
         # We can't mount the entire UI directory, since the `node_modules`

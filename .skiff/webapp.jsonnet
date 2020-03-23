@@ -11,7 +11,7 @@
 local config = import '../skiff.json';
 
 function(
-    proxyImage, cause, sha, env='staging', branch='', repo='',
+    apiImage, proxyImage, cause, sha, env='staging', branch='', repo='',
     buildId=''
 )
     // We only allow registration of hostnames attached to '*.apps.allenai.org'
@@ -77,11 +77,21 @@ function(
     // The port the NGINX proxy is bound to.
     local proxyPort = 80;
 
+    // The port the API (Python Flask application) is bound to.
+    local apiPort = 8000;
+
     // This is used to verify that the proxy (and thereby the UI portion of the
     // application) is healthy. If this fails the application won't receive traffic,
     // and may be restarted.
     local proxyHealthCheck = {
         port: proxyPort,
+        scheme: 'HTTP'
+    };
+
+    // This is used to verify that the API is funtional. We simply check for
+    // whether the socket is open and available.
+    local apiHealthCheck = {
+        port: apiPort,
         scheme: 'HTTP'
     };
 
@@ -180,6 +190,68 @@ function(
                         },
                     },
                     containers: [
+                        {
+                            name: fullyQualifiedName + '-api',
+                            image: apiImage,
+                            args: [ 'app/start.py', '--prod' ],
+                            # The "probes" below allow Kubernetes to determine
+                            # if your application is working properly.
+                            #
+                            # The readiness probe is used to determine if
+                            # an instance of your application can accept live
+                            # requests. The configuration below tells Kubernetes
+                            # to stop sending live requests to your application
+                            # if it returns 3 non 2XX responses over 30 seconds.
+                            # When this happens the application instance will
+                            # be taken out of rotation and given time to "catch-up".
+                            # Once it returns a single 2XX, Kubernetes will put
+                            # it back in rotation.
+                            #
+                            # The liveness probe is used to determine if an
+                            # instance needs to be restarted. The configuration
+                            # below tells Kubernetes to restart the application
+                            # if it's unhealthy for 90 seconds. You can increase
+                            # the `failureThreshold` if your API is slow.
+                            #
+                            # The route that's used by these probes should not
+                            # depend on any external services, it should purely
+                            # assess the health of your local application.
+                            #
+                            # Lastly, the `initialDelaySeconds` instructs
+                            # Kubernetes to wait 30 seconds before starting the
+                            # liveness probe. This is to give your application
+                            # time to start. If your application needs more time
+                            # you should increase this value and give things
+                            # a little headroom, things are always a little slower
+                            # in the cloud :).
+                            readinessProbe: {
+                                httpGet: apiHealthCheck + {
+                                    path: '/?check=readiness_probe'
+                                },
+                                periodSeconds: 10,
+                                failureThreshold: 3
+                            },
+                            livenessProbe: {
+                                httpGet: apiHealthCheck + {
+                                    path: '/?check=liveness_probe'
+                                },
+                                periodSeconds: 10,
+                                failureThreshold: 9,
+                                initialDelaySeconds: 30
+                            },
+                            resources: {
+                                requests: {
+                                    cpu: '0.3',
+                                    memory: '2Gi'
+                                },
+                                limits: {
+                                    # If your software tries to use more than the amount of RAM specified below, it'll be killed
+                                    # and auto restarted. This prevents programs from disrupting workloads on the some node.
+                                    # You can increase this value if necessary.
+                                    memory: '4Gi'
+                                }
+                            },
+                        },
                         {
                             name: fullyQualifiedName + '-proxy',
                             image: proxyImage,

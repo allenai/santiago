@@ -77,9 +77,8 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "@allenai/varnish": "^0.5.8",
+    "@allenai/varnish": "0.8.13",
     "antd": "^3.23.2",
-    "axios": "^0.18.0",
     "lodash": "^4.17.11",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
