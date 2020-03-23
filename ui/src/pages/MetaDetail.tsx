@@ -1,8 +1,7 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { Spin, Icon } from 'antd';
 
-import { Code, Container, Gap, MetadataSummary } from '../components';
+import { Code, Container, Gap, MetadataSummary, LoadingIndicator } from '../components';
 import * as magellan from '../magellan';
 
 interface MetadataEntryIdRouteParams {
@@ -19,7 +18,7 @@ const MetaDetail = (props: RouteComponentProps) => {
     return (
         <Container>
             {!meta ? (
-                <Spin indicator={<Icon type="loading" />} />
+                <LoadingIndicator />
             ) : (
                 <>
                     <Gap position="below" size="xl">

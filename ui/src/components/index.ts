@@ -5,3 +5,4 @@ export * from './Gap';
 export * from './PaperAbstract';
 export * from './PaperTitle';
 export * from './MetadataSummary';
+export * from './LoadingIndicator';
