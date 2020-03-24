@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useHistory, RouteComponentProps } from 'react-router';
 import { Tabs as VTabs, Input, BodyBig } from '@allenai/varnish/components';
 import { List } from 'antd';
+import { PaginationProps } from 'antd/lib/pagination';
 
 import * as magellan from '../magellan';
 import { Container, PaperSummary, MetadataSummary, LoadingIndicator } from '../components';
@@ -11,8 +12,35 @@ function hasQuery(query: magellan.Query): boolean {
     return query.q.trim() !== "";
 }
 
+function mkPaginationConfig(
+    response: magellan.SearchResults<any>,
+    onChange: (q: magellan.Query) => void
+): PaginationProps {
+    const current = Math.floor(response.query.o / response.query.sz) + 1;
+    return {
+        total: response.total_results,
+        pageSize: response.query.sz,
+        current,
+        showSizeChanger: true,
+        onChange: (page: number, pageSize?: number) => {
+            const size = pageSize || magellan.Query.defaults.PAGE_SIZE;
+            const newOffset = (page - 1) * size;
+            const newQuery = new magellan.Query(response.query.q, newOffset, size);
+            onChange(newQuery);
+        },
+        onShowSizeChange: (page: number, pageSize: number) => {
+            const newOffset = (page - 1) * pageSize;
+            const newQuery = new magellan.Query(response.query.q, newOffset, pageSize);
+            onChange(newQuery);
+        }
+    };
+}
+
 const Search = (props: RouteComponentProps) => {
     const history = useHistory();
+    const routeToQuery = (q: magellan.Query) =>
+        history.push(`${props.location.pathname}?${q.toQueryString()}`);
+
     const query = magellan.Query.fromLocation(props.location);
     const [paperSearchResults, setPaperSearchResults] = React.useState<
         magellan.SearchResults<magellan.Paper> | undefined
@@ -63,7 +91,7 @@ const Search = (props: RouteComponentProps) => {
                 defaultValue={query.q}
                 onSearch={q => {
                     const newQuery = new magellan.Query(q);
-                    history.push(`${props.location.pathname}?${newQuery.toQueryString()}`);
+                    routeToQuery(newQuery);
                 }}
             />
             <Results>
@@ -77,6 +105,7 @@ const Search = (props: RouteComponentProps) => {
                                 <List
                                     size="large"
                                     itemLayout="vertical"
+                                    pagination={mkPaginationConfig(paperSearchResults, routeToQuery)}
                                     dataSource={paperSearchResults.items}
                                     renderItem={paper => (
                                         <Item>
@@ -93,6 +122,7 @@ const Search = (props: RouteComponentProps) => {
                                 <List
                                     size="large"
                                     itemLayout="vertical"
+                                    pagination={mkPaginationConfig(metaSearchResults, routeToQuery)}
                                     dataSource={metaSearchResults.items}
                                     renderItem={meta => (
                                         <Item>

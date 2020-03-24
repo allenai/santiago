@@ -29,7 +29,19 @@ def create_api() -> Blueprint:
     @api.route('/paper/search')
     def search_papers():
         queryText = request.args.get('q')
+        try:
+            offset = int(request.args.get('o', '0'))
+        except ValueError as err:
+            return jsonify({ 'error': 'Invalid offset' }), 400
+        try:
+            size = int(request.args.get('sz', '10'))
+        except ValueError as err:
+            return jsonify({ 'error': 'Invalid size' }), 400
+        if size > 40:
+            return jsonify({ 'error': 'Page size cannot be above 40' }), 400
         query = {
+            'from': offset,
+            'size': size,
             'query': {
                 'simple_query_string': {
                     'query': queryText,
@@ -61,7 +73,19 @@ def create_api() -> Blueprint:
     @api.route('/meta/search')
     def search_meta():
         queryText = request.args.get('q')
+        try:
+            offset = int(request.args.get('o', '0'))
+        except ValueError as err:
+            return jsonify({ 'error': 'Invalid offset' }), 400
+        try:
+            size = int(request.args.get('sz', '10'))
+        except ValueError as err:
+            return jsonify({ 'error': 'Invalid size' }), 400
+        if size > 40:
+            return jsonify({ 'error': 'Page size cannot be above 40' }), 400
         query = {
+            'from': offset,
+            'size': size,
             'query': {
                 'simple_query_string': {
                     'query': queryText,

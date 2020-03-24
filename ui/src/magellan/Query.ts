@@ -2,7 +2,14 @@ import qs from 'querystring';
 import { Location } from 'history';
 
 export class Query {
-    constructor(readonly q: string) {}
+    constructor(
+        // The query text
+        readonly q: string,
+        // The query offset
+        readonly o: number = Query.defaults.OFFSET,
+        // The number of results to display
+        readonly sz: number = Query.defaults.PAGE_SIZE
+    ) {}
 
     equals(query: Query): boolean {
         return this.toQueryString() === query.toQueryString();
@@ -15,7 +22,14 @@ export class Query {
     static fromLocation(loc: Location): Query {
         const query = qs.parse(loc.search.replace(/^[?]{1}/, ''));
         const q = first(query.q, '');
-        return new Query(q);
+        const o = parseInt(first(query.o, '0'));
+        const sz = parseInt(first(query.sz, '10'));
+        return new Query(q, o, sz);
+    }
+
+    static defaults = {
+        PAGE_SIZE: 10,
+        OFFSET: 0
     }
 }
 
