@@ -110,6 +110,8 @@
     "webpack": "^4.41.3"
   },
   "resolutions": {
-    "react-scripts/webpack": "^4.41.3"
+    "react-scripts/webpack": "^4.41.3",
+    "**/acorn": "^7.1.1",
+    "**/minimist": "^1.2.2"
   }
 }
