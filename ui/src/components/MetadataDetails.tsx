@@ -6,11 +6,12 @@ import { MetadataEntry } from '../magellan';
 
 interface Props {
     meta: MetadataEntry;
+    hidePapers?: boolean;
 }
 
-export const MetadataDetails = ({ meta }: Props) => {
+export const MetadataDetails = ({ meta, hidePapers }: Props) => {
     // TODO: Clean up the index so this isn't necessary in the client.
-    const nonEmptyPaperIds = meta.paper_ids.filter(pid => pid !== "");
+    const nonEmptyPaperIds = !hidePapers ? meta.paper_ids.filter(pid => pid !== "") : [];
     return (
         <>
             {meta.doi ? (

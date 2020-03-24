@@ -63,11 +63,35 @@ def create_api() -> Blueprint:
                 'Content-Type': 'application/json'
             }
         )
+        # TODO: It's unecessary to deserialize and then reserialize the data, but we do it
+        # since jsonify takes care of some of the headers we'd need to set othewrise. We should
+        # write a helper that gets rid of the unecessary work and use it for all endpoints
+        # that are more or less ES proxies.
         return jsonify(resp.json()), resp.status_code
 
     @api.route('/paper/<string:id>')
     def get_paper(id: str):
         resp = requests.get(f'{cluster_url}/{papers_index}/_doc/{id}')
+        return jsonify(resp.json()), resp.status_code
+
+    @api.route('/paper/<string:id>/meta')
+    def get_paper_metadata(id: str):
+        query = {
+            'query': {
+                'term': {
+                    'paper_ids': {
+                        'value': id
+                    }
+                }
+            }
+        }
+        resp = requests.get(
+            f'{cluster_url}/{meta_index}/_search',
+            data=json.dumps(query),
+            headers = {
+                'Content-Type': 'application/json'
+            }
+        )
         return jsonify(resp.json()), resp.status_code
 
     @api.route('/meta/search')

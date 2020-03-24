@@ -56,6 +56,20 @@ export async function getPaperById(id: string): Promise<Paper> {
     return doc._source;
 }
 
+export interface PaperMetaSearchResults {
+    items: MetadataEntry[];
+    total_results: number;
+}
+
+export async function getPaperMeta(paper_id: string): Promise<PaperMetaSearchResults> {
+    const resp = await fetch(`/api/paper/${paper_id}/meta`);
+    const data: EsSearchResponse<MetadataEntry> = await resp.json();
+    return {
+        items: data.hits.hits.map(d => ({ id: d._id, ...d._source })),
+        total_results: data.hits.total.value
+    };
+}
+
 export async function searchForMetadata(query: Query): Promise<SearchResults<MetadataEntry>> {
     const resp = await fetch(`/api/meta/search?${query.toQueryString()}`);
     const data: EsSearchResponse<MetadataEntry> = await resp.json();

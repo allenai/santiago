@@ -27,7 +27,7 @@ const MetaDetail = (props: RouteComponentProps) => {
                     <Gap position="below" size="lg">
                         <MetadataSummary meta={meta} disableLink />
                     </Gap>
-                    <Tabs>
+                    <Tabs defaultActiveKey="details">
                         <Tabs.TabPane tab="Details" key="details">
                             <MetadataDetails meta={meta} />
                         </Tabs.TabPane>
