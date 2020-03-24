@@ -20,7 +20,7 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                         <strong>DOI:</strong><br />{meta.doi}
                     </Gap>
                     <Gap position="below" size="md">
-                        <strong>Semantic Scholar URL (this might not work):</strong><br />
+                        <strong>Paper Link (this might not work):</strong><br />
                         <a href={`https://api.semanticscholar.org/${meta.doi}`}>
                             https://api.semanticscholar.org/{meta.doi}
                         </a>

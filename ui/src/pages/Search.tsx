@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { useHistory, RouteComponentProps } from 'react-router';
 import { Tabs as VTabs, Input, BodyBig } from '@allenai/varnish/components';
-import { List } from 'antd';
+import { List, Icon, Popover } from 'antd';
 import { PaginationProps } from 'antd/lib/pagination';
 
 import * as magellan from '../magellan';
@@ -69,6 +69,15 @@ const Search = (props: RouteComponentProps) => {
     const isLoading = hasQuery(query) && !hasResults;
 
     const nf = new Intl.NumberFormat();
+
+    const queryHelp = (
+        <>
+            You can use query operators like AND, NOT, and more.<br />
+            For more information see
+            {" "}<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html" rel="noopener">this documentation.</a>
+        </>
+    );
+
     return (
         <Container>
             {!isLoading && !hasResults ? (
@@ -85,15 +94,22 @@ const Search = (props: RouteComponentProps) => {
                     </p>
                 </IntroText>
             ) : null}
-            <Input.Search
-                name="q"
-                placeholder="Enter a search query"
-                defaultValue={query.q}
-                onSearch={q => {
-                    const newQuery = new magellan.Query(q);
-                    routeToQuery(newQuery);
-                }}
-            />
+            <SearchRow>
+                <Input.Search
+                    name="q"
+                    placeholder="Enter a search query"
+                    defaultValue={query.q}
+                    onSearch={q => {
+                        const newQuery = new magellan.Query(q);
+                        routeToQuery(newQuery);
+                    }}
+                />
+                <Popover content={queryHelp} title="Supported Queries">
+                    <BodyBig>
+                        <Icon type="question-circle" />
+                    </BodyBig>
+                </Popover>
+            </SearchRow>
             <Results>
                 {isLoading ? <LoadingIndicator /> : null}
                 {hasResults ? (
@@ -168,6 +184,13 @@ const IntroText = styled(BodyBig)`
             margin: 0;
         }
     `}
+`;
+
+const SearchRow = styled.div`
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing.md};
 `;
 
 export default Search;
