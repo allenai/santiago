@@ -81,5 +81,5 @@ export async function getMetaById(id: string): Promise<MetadataEntry> {
         throw new NoMetaEntryFoundError(id);
     }
     const doc: EsDoc<MetadataEntry> = await resp.json();
-    return doc._source;
+    return { id: doc._id, ...doc._source };
 }
