@@ -52,10 +52,7 @@ const GoogleAnalytics = () => {
     React.useEffect(
         () =>
             history.listen(loc => {
-                let url = document.location.origin + loc.pathname;
-                if (loc.search) {
-                    url += '?' + loc.search;
-                }
+                const url = document.location.origin + loc.pathname + loc.search || '';
                 trackPageView(document.title, url);
             }),
         [history]
