@@ -15,6 +15,7 @@ import Search from './pages/Search';
 import PaperDetail from './pages/PaperDetail';
 import MetaDetail from './pages/MetaDetail';
 import { trackPageView } from './ga';
+import { CORD19Logo } from './components';
 
 const App = () => {
     return (
@@ -26,9 +27,7 @@ const App = () => {
                         <HeaderColumns gridTemplateColumns="min-content auto min-content">
                             <TitleLink to="/">
                                 <SimpleLogo>
-                                    <span role="img" aria-label="CORD-19 Explorer">
-                                        🦠
-                                    </span>
+                                    <CORD19Logo />
                                 </SimpleLogo>
                             </TitleLink>
                             <HeaderTitleWithPadding>
@@ -65,7 +64,7 @@ const GoogleAnalytics = () => {
 };
 
 const SimpleLogo = styled.div`
-    border-radius: 25px;
+    border-radius: 4px;
     width: 50px;
     height: 50px;
     line-height: 1;
@@ -74,9 +73,16 @@ const SimpleLogo = styled.div`
     align-items: center;
     justify-content: center;
     color: #fff;
-    background: ${({ theme }) => theme.color.G2};
+    background: linear-gradient(90deg, #1857B6 0%, #0F3875 94.27%);
     margin: ${({ theme }) => `${theme.spacing.md} 0`};
+    overflow: hidden;
+
+    svg {
+        display: block;
+    }
 `;
+
+
 
 const HeaderTitleWithPadding = styled(HeaderTitle)`
     padding: ${({ theme }) => theme.spacing.md} 0;
