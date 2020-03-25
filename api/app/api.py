@@ -79,14 +79,7 @@ def create_api() -> Blueprint:
             'query': {
                 'simple_query_string': {
                     'query': queryText,
-                    'fields': [
-                        'metadata.title^4',
-                        'abstract.text^3',
-                        'body.text^2',
-                        'authors.first',
-                        'authors.middle',
-                        'authors.last'
-                    ]
+                    'all_fields': True
                 }
             }
         }
@@ -158,12 +151,7 @@ def create_api() -> Blueprint:
             'query': {
                 'simple_query_string': {
                     'query': queryText,
-                    'fields': [
-                        'title^3',
-                        'abstract^2',
-                        'authors',
-                        'journal'
-                    ]
+                    'all_fields': True
                 }
             }
         }
