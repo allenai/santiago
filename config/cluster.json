@@ -1,0 +1,4 @@
+{
+    "host": "elasticsearch",
+    "port": 9200
+}

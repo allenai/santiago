@@ -8,3 +8,4 @@ export * from './MetadataSummary';
 export * from './LoadingIndicator';
 export * from './CORD19Logo';
 export * from './MetadataDetails';
+export * from './Footer';

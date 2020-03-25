@@ -11,3 +11,7 @@ ui/build/
 # UI package manager debug output
 ui/*.log
 .skiff/webapp.yaml
+
+# Application credentials
+secrets/
+

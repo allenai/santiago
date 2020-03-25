@@ -1,9 +1,44 @@
 import json
+import requests
+import os
 
 from flask import Flask, Blueprint, jsonify, request, current_app
 from random import randint
 from time import sleep
-import requests
+from dataclasses import dataclass
+from requests_aws4auth import AWS4Auth
+from typing import Optional
+
+@dataclass
+class ClusterConfig:
+    host: str
+    secure: bool = False
+    auth_type: Optional[str] = None
+    port: Optional[str] = None
+
+    @property
+    def origin(self):
+        proto = "https" if self.secure else "http"
+        origin = f"{proto}://{self.host}"
+        if self.port is not None:
+            origin += f":{self.port}"
+        return origin
+
+    def auth(self) -> Optional[AWS4Auth]:
+        if self.auth_type == "aws":
+            creds_path = os.getenv("SANTIAGO_ES_CREDS_PATH", "/secrets/escreds.json")
+            with open(creds_path, "r") as fh:
+                creds = json.load(fh)
+            return AWS4Auth(creds["access_key"], creds["secret_key"], creds["region"], "es")
+        else:
+            return None
+
+    @staticmethod
+    def load_from_env() -> "ClusterConfig":
+        config_path = os.getenv("SANTIAGO_CLUSTER_CONFIG_PATH", "/config/cluster.json")
+        with open(config_path, "r") as fh:
+            config = json.load(fh)
+        return ClusterConfig(**config)
 
 def create_api() -> Blueprint:
     """
@@ -22,7 +57,6 @@ def create_api() -> Blueprint:
     def index() -> (str, int):
         return '', 204
 
-    cluster_url = 'https://search-magellan-public-dev-pwta5a6pazn5d77gdrgqqzaeda.us-west-2.es.amazonaws.com'
     papers_index = 'paper_v1'
     meta_index = 'metadata_v1';
 
@@ -56,9 +90,11 @@ def create_api() -> Blueprint:
                 }
             }
         }
+        cluster = ClusterConfig.load_from_env()
         resp = requests.get(
-            f'{cluster_url}/{papers_index}/_search',
+            f'{cluster.origin}/{papers_index}/_search',
             data=json.dumps(query),
+            auth=cluster.auth(),
             headers = {
                 'Content-Type': 'application/json'
             }
@@ -71,7 +107,8 @@ def create_api() -> Blueprint:
 
     @api.route('/paper/<string:id>')
     def get_paper(id: str):
-        resp = requests.get(f'{cluster_url}/{papers_index}/_doc/{id}')
+        cluster = ClusterConfig.load_from_env()
+        resp = requests.get(f'{cluster.origin}/{papers_index}/_doc/{id}', auth=cluster.auth())
         return jsonify(resp.json()), resp.status_code
 
     @api.route('/paper/<string:id>/meta')
@@ -85,9 +122,11 @@ def create_api() -> Blueprint:
                 }
             }
         }
+        cluster = ClusterConfig.load_from_env()
         resp = requests.get(
-            f'{cluster_url}/{meta_index}/_search',
+            f'{cluster.origin}/{meta_index}/_search',
             data=json.dumps(query),
+            auth=cluster.auth(),
             headers = {
                 'Content-Type': 'application/json'
             }
@@ -122,9 +161,11 @@ def create_api() -> Blueprint:
                 }
             }
         }
+        cluster = ClusterConfig.load_from_env()
         resp = requests.get(
-            f'{cluster_url}/{meta_index}/_search',
+            f'{cluster.origin}/{meta_index}/_search',
             data=json.dumps(query),
+            auth=cluster.auth(),
             headers = {
                 'Content-Type': 'application/json'
             }
@@ -133,7 +174,8 @@ def create_api() -> Blueprint:
 
     @api.route('/meta/<string:id>')
     def get_meta(id: str):
-        resp = requests.get(f'{cluster_url}/{meta_index}/_doc/{id}')
+        cluster = ClusterConfig.load_from_env()
+        resp = requests.get(f'{cluster.origin}/{meta_index}/_doc/{id}', auth=cluster.auth())
         return jsonify(resp.json()), resp.status_code
 
     return api

@@ -7,7 +7,6 @@ import {
     HeaderColumns,
     Layout,
     Content,
-    Footer,
     HeaderTitle
 } from '@allenai/varnish/components';
 
@@ -15,7 +14,7 @@ import Search from './pages/Search';
 import PaperDetail from './pages/PaperDetail';
 import MetaDetail from './pages/MetaDetail';
 import { trackPageView } from './ga';
-import { CORD19Logo } from './components';
+import { CORD19Logo, Footer } from './components';
 
 const App = () => {
     return (
