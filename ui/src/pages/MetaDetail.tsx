@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router';
 import { Tabs } from '@allenai/varnish/components'
 import { Icon } from 'antd';
+import ReactJson from 'react-json-view'
 
-import { Code, Container, Gap, MetadataDetails, MetadataSummary, LoadingIndicator } from '../components';
+import { Container, Gap, MetadataDetails, MetadataSummary, LoadingIndicator } from '../components';
 import * as magellan from '../magellan';
 
 interface MetadataEntryIdRouteParams {
@@ -34,13 +35,13 @@ const MetaDetail = (props: RouteComponentProps) => {
                         <Tabs.TabPane tab="JSON" key="json">
                             <Gap position="below" size="md">
                                 <TextRight>
-                                    <a href={`/api/meta/${meta.id}`} download={`${meta.id}.json`}>
+                                    <a href={`/api/meta/${meta.id}?download`}>
                                         <Icon type="download" />{" "}
                                         Download JSON
                                     </a>
                                 </TextRight>
                             </Gap>
-                            <Code><pre>{JSON.stringify(meta, null, 2)}</pre></Code>
+                            <ReactJson name={false} src={meta} />
                         </Tabs.TabPane>
                     </Tabs>
                 </>

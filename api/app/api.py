@@ -2,10 +2,10 @@ import json
 import requests
 import os
 
-from flask import Flask, Blueprint, jsonify, request, current_app
+from flask import Flask, Blueprint, jsonify, request, current_app, Response
 from random import randint
 from time import sleep
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from requests_aws4auth import AWS4Auth
 from typing import Optional
 
@@ -18,25 +18,25 @@ class ClusterConfig:
 
     @property
     def origin(self):
-        proto = "https" if self.secure else "http"
-        origin = f"{proto}://{self.host}"
+        proto = 'https' if self.secure else 'http'
+        origin = f'{proto}://{self.host}'
         if self.port is not None:
-            origin += f":{self.port}"
+            origin += f':{self.port}'
         return origin
 
     def auth(self) -> Optional[AWS4Auth]:
-        if self.auth_type == "aws":
-            creds_path = os.getenv("SANTIAGO_ES_CREDS_PATH", "/secrets/escreds.json")
-            with open(creds_path, "r") as fh:
+        if self.auth_type == 'aws':
+            creds_path = os.getenv('SANTIAGO_ES_CREDS_PATH', '/secrets/escreds.json')
+            with open(creds_path, 'r') as fh:
                 creds = json.load(fh)
-            return AWS4Auth(creds["access_key"], creds["secret_key"], creds["region"], "es")
+            return AWS4Auth(creds['access_key'], creds['secret_key'], creds['region'], 'es')
         else:
             return None
 
     @staticmethod
-    def load_from_env() -> "ClusterConfig":
-        config_path = os.getenv("SANTIAGO_CLUSTER_CONFIG_PATH", "/config/cluster.json")
-        with open(config_path, "r") as fh:
+    def load_from_env() -> 'ClusterConfig':
+        config_path = os.getenv('SANTIAGO_CLUSTER_CONFIG_PATH', '/config/cluster.json')
+        with open(config_path, 'r') as fh:
             config = json.load(fh)
         return ClusterConfig(**config)
 
@@ -109,7 +109,13 @@ def create_api() -> Blueprint:
     def get_paper(id: str):
         cluster = ClusterConfig.load_from_env()
         resp = requests.get(f'{cluster.origin}/{papers_index}/_doc/{id}', auth=cluster.auth())
-        return jsonify(resp.json()), resp.status_code
+        if request.args.get('download', None) is not None:
+            doc = resp.json()
+            return Response(json.dumps(doc['_source']), mimetype='application/json', headers={
+                'Content-Disposition': f'attachment; filename={id}.json'
+            })
+        else:
+            return jsonify(resp.json()), resp.status_code
 
     @api.route('/paper/<string:id>/meta')
     def get_paper_metadata(id: str):
@@ -176,6 +182,12 @@ def create_api() -> Blueprint:
     def get_meta(id: str):
         cluster = ClusterConfig.load_from_env()
         resp = requests.get(f'{cluster.origin}/{meta_index}/_doc/{id}', auth=cluster.auth())
-        return jsonify(resp.json()), resp.status_code
+        if request.args.get('download', None) is not None:
+            doc = resp.json()
+            return Response(json.dumps(doc['_source']), mimetype='application/json', headers={
+                'Content-Disposition': f'attachment; filename={id}.json'
+            })
+        else:
+            return jsonify(resp.json()), resp.status_code
 
     return api

@@ -4,8 +4,9 @@ import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Tabs } from '@allenai/varnish/components';
 import { Icon } from 'antd';
+import ReactJson from 'react-json-view'
 
-import { Code, Container, Gap, PaperSummary, LoadingIndicator, MetadataDetails } from '../components';
+import { Container, Gap, PaperSummary, LoadingIndicator, MetadataDetails } from '../components';
 import * as magellan from '../magellan';
 
 interface PaperIdRouteParams {
@@ -57,13 +58,13 @@ const PaperDetail = (props: RouteComponentProps) => {
                         <Tabs.TabPane tab="JSON" key="json">
                             <Gap position="below" size="md">
                                 <TextRight>
-                                    <a href={`/api/paper/${paper.paper_id}`} download={`${paper.paper_id}.json`}>
+                                    <a href={`/api/paper/${paper.paper_id}?download`}>
                                         <Icon type="download" />{" "}
                                         Download JSON
                                     </a>
                                 </TextRight>
                             </Gap>
-                            <Code><pre>{JSON.stringify(paper, null, 2)}</pre></Code>
+                            <ReactJson name={false} src={paper} />
                         </Tabs.TabPane>
                     </Tabs>
                 </>
