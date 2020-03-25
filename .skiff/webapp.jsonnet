@@ -198,7 +198,7 @@ function(
                                 {
                                     name: fullyQualifiedName + '-es-config',
                                     mountPath: '/config',
-                                    readonly: true
+                                    readOnly: true
                                 }
                             ]
                         },
