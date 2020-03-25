@@ -32,6 +32,9 @@ const App = () => {
                             <HeaderTitleWithPadding>
                                 <TitleLink to="/">CORD-19 Explorer</TitleLink>
                             </HeaderTitleWithPadding>
+                            <div>
+                                <a href="https://discourse.cord-19.semanticscholar.org/" rel="noopener">Feedback</a>
+                            </div>
                         </HeaderColumns>
                     </Header>
                     <Content>
