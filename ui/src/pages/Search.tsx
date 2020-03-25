@@ -94,8 +94,8 @@ const Search = (props: RouteComponentProps) => {
                         potential research efforts.
                     </p>
                     <p>
-                        If you have ideas for contributing to the explorer, dataset or research
-                        efforts feel free to discuss them <a href="https://discourse.cord-19.semanticscholar.org/">here</a>.
+                        If you have ideas for for how to improve the tool, or would like to contribute
+                        to the research effort, don't hesitate to join the <a href="https://discourse.cord-19.semanticscholar.org/">discussion</a>.
                     </p>
                 </IntroText>
             ) : null}
