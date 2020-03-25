@@ -6,7 +6,7 @@ import { List, Icon, Popover } from 'antd';
 import { PaginationProps } from 'antd/lib/pagination';
 
 import * as magellan from '../magellan';
-import { Container, PaperSummary, MetadataSummary, LoadingIndicator } from '../components';
+import { Container, Error, PaperSummary, MetadataSummary, LoadingIndicator } from '../components';
 
 function hasQuery(query: magellan.Query): boolean {
     return query.q.trim() !== "";
@@ -48,9 +48,11 @@ const Search = (props: RouteComponentProps) => {
     const [metaSearchResults, setMetaSearchResults] = React.useState<
         magellan.SearchResults<magellan.MetadataEntry> | undefined
     >();
+    const [hasError, setHasError] = React.useState(false);
     React.useEffect(() => {
         setPaperSearchResults(undefined);
         setMetaSearchResults(undefined);
+        setHasError(false);
         if (hasQuery(query)) {
             Promise.all([magellan.searchForPapers(query), magellan.searchForMetadata(query)]).then(
                 ([paperResp, metaResp]) => {
@@ -61,12 +63,15 @@ const Search = (props: RouteComponentProps) => {
                         setMetaSearchResults(metaResp);
                     }
                 }
-            );
+            ).catch(err => {
+                console.error(`Error issuing search query:`, err);
+                setHasError(true);
+            });
         }
     }, [query.toQueryString()]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const hasResults = paperSearchResults || metaSearchResults;
-    const isLoading = hasQuery(query) && !hasResults;
+    const isLoading = hasQuery(query) && !hasResults && !hasError;
 
     const nf = new Intl.NumberFormat();
 
@@ -111,6 +116,7 @@ const Search = (props: RouteComponentProps) => {
                 </Popover>
             </SearchRow>
             <Results>
+                {hasError ? <Error /> : null}
                 {isLoading ? <LoadingIndicator /> : null}
                 {hasResults ? (
                     <Tabs>

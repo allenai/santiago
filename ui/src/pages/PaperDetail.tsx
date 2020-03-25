@@ -6,7 +6,7 @@ import { Tabs } from '@allenai/varnish/components';
 import { Icon } from 'antd';
 import ReactJson from 'react-json-view'
 
-import { Container, Gap, PaperSummary, LoadingIndicator, MetadataDetails } from '../components';
+import { Container, Error, Gap, PaperSummary, LoadingIndicator, MetadataDetails } from '../components';
 import * as magellan from '../magellan';
 
 interface PaperIdRouteParams {
@@ -22,16 +22,22 @@ const PaperDetail = (props: RouteComponentProps) => {
     const params = props.match.params as PaperIdRouteParams;
     const [ { paper, meta }, setState ] =
         React.useState<State>({ paper: undefined, meta: undefined });
+    const [ hasError, setHasError ] = React.useState(false);
     React.useEffect(() => {
+        setHasError(false);
         Promise.all([ magellan.getPaperById(params.id), magellan.getPaperMeta(params.id) ])
-               .then(([ paper, meta ]) => setState({ paper, meta }));
+               .then(([ paper, meta ]) => setState({ paper, meta }))
+               .catch(err => {
+                   console.error('Error fetching paper by id:', err);
+                   setHasError(true);
+               });
     }, [params.id]);
-
+    const isLoading = !paper;
     return (
         <Container>
-            {!paper ? (
-                <LoadingIndicator />
-            ) : (
+            {hasError ? <Error /> : null}
+            {isLoading && !hasError ? <LoadingIndicator /> : null}
+            {paper ? (
                 <>
                     <Gap position="below" size="xl">
                         <PaperSummary paper={paper} disableLink />
@@ -68,7 +74,7 @@ const PaperDetail = (props: RouteComponentProps) => {
                         </Tabs.TabPane>
                     </Tabs>
                 </>
-            )}
+            ): null}
         </Container>
     );
 };

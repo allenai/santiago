@@ -5,7 +5,7 @@ import { Tabs } from '@allenai/varnish/components'
 import { Icon } from 'antd';
 import ReactJson from 'react-json-view'
 
-import { Container, Gap, MetadataDetails, MetadataSummary, LoadingIndicator } from '../components';
+import { Container, Error, Gap, MetadataDetails, MetadataSummary, LoadingIndicator } from '../components';
 import * as magellan from '../magellan';
 
 interface MetadataEntryIdRouteParams {
@@ -15,15 +15,20 @@ interface MetadataEntryIdRouteParams {
 const MetaDetail = (props: RouteComponentProps) => {
     const params = props.match.params as MetadataEntryIdRouteParams;
     const [meta, setMeta] = React.useState<magellan.MetadataEntry | undefined>();
+    const [ hasError, setHasError ] = React.useState(false);
     React.useEffect(() => {
-        magellan.getMetaById(params.id).then(setMeta);
+        setHasError(false);
+        magellan.getMetaById(params.id).then(setMeta).catch(err => {
+            console.error('Error fetching metadata by id:', err);
+            setHasError(true);
+        });
     }, [params.id]);
-
+    const isLoading = !meta;
     return (
         <Container>
-            {!meta ? (
-                <LoadingIndicator />
-            ) : (
+            {hasError ? <Error /> : null}
+            {isLoading && !hasError ? <LoadingIndicator /> : null}
+            {meta ? (
                 <>
                     <Gap position="below" size="lg">
                         <MetadataSummary meta={meta} disableLink />
@@ -45,7 +50,7 @@ const MetaDetail = (props: RouteComponentProps) => {
                         </Tabs.TabPane>
                     </Tabs>
                 </>
-            )}
+            ) : null}
         </Container>
     );
 };
