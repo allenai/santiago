@@ -132,9 +132,12 @@ def create_api() -> Blueprint:
         )
         return jsonify(resp.json()), resp.status_code
 
-    @api.route('/papers')
+    @api.route('/papers', methods=['POST', 'GET'])
     def get_papers():
-        ids = [ id for id in request.args.get('ids', '').split(',') if id.strip() != '' ]
+        if request.method == 'GET':
+            ids = [ id for id in request.args.get('ids', '').split(',') if id.strip() != '' ]
+        else:
+            ids = request.json.get('ids', [])
         num_ids = len(ids)
         # We set a cap as to how many can be requested to prevent people from doing crazy
         # things. We could increase this, as it's somewhat arbitrary. ES won't let it go
