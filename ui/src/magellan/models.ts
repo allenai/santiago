@@ -12,8 +12,7 @@ export interface Location {
 export interface Affiliation {
     labratory: string;
     institution: string;
-    // TODO: Fill this out, once I know it's shape.
-    location: {};
+    location: Location;
 }
 
 export interface Author {
