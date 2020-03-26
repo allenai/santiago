@@ -132,6 +132,36 @@ def create_api() -> Blueprint:
         )
         return jsonify(resp.json()), resp.status_code
 
+    @api.route('/papers')
+    def get_papers():
+        ids = [ id for id in request.args.get('ids', '').split(',') if id.strip() != '' ]
+        num_ids = len(ids)
+        if num_ids > 100:
+            return jsonify({ 'error': 'You can only specify up to 100 ids'}), 400
+        if num_ids == 0:
+            return jsonify([])
+        papers = []
+        cluster = ClusterConfig.load_from_env()
+        query = {
+            'query': {
+                'terms': {
+                    'paper_id': ids
+                }
+            },
+            'size': 100,
+            '_source': ['paper_id', 'metadata.authors', 'metadata.title', 'abstract.text' ]
+        }
+        resp = requests.get(
+            f'{cluster.origin}/{papers_index}/_search',
+            data=json.dumps(query),
+            auth=cluster.auth(),
+            headers = {
+                'Content-Type': 'application/json'
+            }
+        )
+        papers = [ doc['_source'] for doc in resp.json().get('hits', {}).get('hits', []) ]
+        return jsonify(papers), resp.status_code
+
     @api.route('/meta/search')
     def search_meta():
         queryText = request.args.get('q')
