@@ -136,7 +136,11 @@ def create_api() -> Blueprint:
     def get_papers():
         ids = [ id for id in request.args.get('ids', '').split(',') if id.strip() != '' ]
         num_ids = len(ids)
-        if num_ids > 100:
+        # We set a cap as to how many can be requested to prevent people from doing crazy
+        # things. We could increase this, as it's somewhat arbitrary. ES won't let it go
+        # above 10000, I think.
+        max_ids = 100
+        if num_ids > max_ids:
             return jsonify({ 'error': 'You can only specify up to 100 ids'}), 400
         if num_ids == 0:
             return jsonify([])
@@ -148,7 +152,7 @@ def create_api() -> Blueprint:
                     'paper_id': ids
                 }
             },
-            'size': 100,
+            'size': max_ids,
             '_source': ['paper_id', 'metadata.authors', 'metadata.title', 'abstract.text' ]
         }
         resp = requests.get(
