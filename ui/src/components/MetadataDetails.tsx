@@ -17,7 +17,10 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
             {meta.doi ? (
                 <>
                     <Gap position="below" size="md">
-                        <strong>DOI:</strong><br />{meta.doi}
+                        <strong>DOI:</strong><br />
+                        <a href={`https://doi.org/${meta.doi}`} rel="noopener">
+                            {meta.doi}
+                        </a>
                     </Gap>
                     <Gap position="below" size="md">
                         <strong>Paper Link (this might not work):</strong><br />
