@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const PaperSummary = ({ paper, disableLink }: Props) => {
-    const abstractText = paper.abstract.map(a => a.text).join(' ');
+    const abstractText = paper.abstract ? paper.abstract.map(a => a.text).join(' ') : '';
     const authorNames = paper.metadata.authors
         .map(a => [a.first, a.middle.join(' '), a.last].join(' '))
         .join(', ');
