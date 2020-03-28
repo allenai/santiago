@@ -14,6 +14,10 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
     const nonEmptyPaperIds = !hidePapers ? meta.paper_ids.filter(pid => pid !== "") : [];
     return (
         <>
+            <Gap position="below" size="md">
+                <strong>CORD UID:</strong><br />
+                {meta.cord_uid}
+            </Gap>
             {meta.doi ? (
                 <>
                     <Gap position="below" size="md">
@@ -29,6 +33,12 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                         </a>
                     </Gap>
                 </>
+            ) : null}
+            {meta.url ? (
+                <Gap position="below" size="md">
+                    <strong>URL:</strong><br />
+                    <a href={meta.url} rel="noopener">{meta.url}</a>
+                </Gap>
             ) : null}
             {nonEmptyPaperIds.length > 0 ? (
                 <Gap position="below" size="md">

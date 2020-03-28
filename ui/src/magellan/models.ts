@@ -53,6 +53,7 @@ export interface Paper {
 
 export interface MetadataEntry {
     id: string;
+    cord_uid: string;
     paper_ids: string[];
     source: string;
     title: string;
@@ -68,4 +69,5 @@ export interface MetadataEntry {
     who_covidence_number: string;
     has_full_text: boolean;
     collection: string;
+    url: string;
 }
