@@ -18,7 +18,6 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                 <strong>CORD UID:</strong><br />
                 {meta.cord_uid}
             </Gap>
-            <strong></strong>
             {meta.doi ? (
                 <>
                     <Gap position="below" size="md">
