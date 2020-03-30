@@ -225,6 +225,16 @@ const Search = (props: RouteComponentProps) => {
                                 Azure Cognitive Search
                             </a>
                         </li>
+                        <li>
+                            <a href="https://www.sketchengine.eu/covid19/" rel="noopener">
+                                Covid 19 Corpus
+                            </a>
+                            <br />
+                            The CORD-19 dataset loaded into the{' '}
+                            <a href="https://www.sketchengine.eu/" rel="noopener">
+                                Sketch Engine
+                            </a>
+                        </li>
                     </SearchEngineList>
                     If you have a tool that you'd like listed here,{' '}
                     <a href="https://discourse.cord-19.semanticscholar.org/" rel="noopener">
