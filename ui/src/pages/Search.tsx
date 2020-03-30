@@ -9,7 +9,7 @@ import * as magellan from '../magellan';
 import { Container, Error, PaperSummary, MetadataSummary, LoadingIndicator } from '../components';
 
 function hasQuery(query: magellan.Query): boolean {
-    return query.q.trim() !== "";
+    return query.q.trim() !== '';
 }
 
 function mkPaginationConfig(
@@ -54,19 +54,19 @@ const Search = (props: RouteComponentProps) => {
         setMetaSearchResults(undefined);
         setHasError(false);
         if (hasQuery(query)) {
-            Promise.all([magellan.searchForPapers(query), magellan.searchForMetadata(query)]).then(
-                ([paperResp, metaResp]) => {
+            Promise.all([magellan.searchForPapers(query), magellan.searchForMetadata(query)])
+                .then(([paperResp, metaResp]) => {
                     if (paperResp.query.equals(query)) {
                         setPaperSearchResults(paperResp);
                     }
                     if (metaResp.query.equals(query)) {
                         setMetaSearchResults(metaResp);
                     }
-                }
-            ).catch(err => {
-                console.error(`Error issuing search query:`, err);
-                setHasError(true);
-            });
+                })
+                .catch(err => {
+                    console.error(`Error issuing search query:`, err);
+                    setHasError(true);
+                });
         }
     }, [query.toQueryString()]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -77,25 +77,35 @@ const Search = (props: RouteComponentProps) => {
 
     const queryHelp = (
         <>
-            You can use query operators like AND, NOT, and more.<br />
-            For more information see
-            {" "}<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html" rel="noopener">this documentation.</a>
+            You can use query operators like AND, NOT, and more.
+            <br />
+            For more information see{' '}
+            <a
+                href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html"
+                rel="noopener">
+                this documentation.
+            </a>
         </>
     );
 
+    const showHomePageContent = !isLoading && !hasResults;
+
     return (
         <Container>
-            {!isLoading && !hasResults ? (
+            {showHomePageContent ? (
                 <IntroText as="div">
                     <p>
-                        The <strong>CORD-19 explorer</strong> is a full-text search engine for
-                        the <a href="https://pages.semanticscholar.org/coronavirus-research">COVID-19 Open Research Dataset</a>.
-                        Our hope is that it helps people explore the dataset and identify
+                        The <strong>CORD-19 explorer</strong> is a full-text search engine for the{' '}
+                        <a href="https://pages.semanticscholar.org/coronavirus-research">
+                            COVID-19 Open Research Dataset
+                        </a>
+                        . Our hope is that it helps people explore the dataset and identify
                         potential research efforts.
                     </p>
                     <p>
-                        If you have ideas for for how to improve the tool, or would like to contribute
-                        to the research effort, don't hesitate to join the <a href="https://discourse.cord-19.semanticscholar.org/">discussion</a>.
+                        If you have ideas for for how to improve the tool, or would like to
+                        contribute to the research effort, don't hesitate to join the{' '}
+                        <a href="https://discourse.cord-19.semanticscholar.org/">discussion</a>.
                     </p>
                 </IntroText>
             ) : null}
@@ -127,7 +137,10 @@ const Search = (props: RouteComponentProps) => {
                                 <List
                                     size="large"
                                     itemLayout="vertical"
-                                    pagination={mkPaginationConfig(paperSearchResults, routeToQuery)}
+                                    pagination={mkPaginationConfig(
+                                        paperSearchResults,
+                                        routeToQuery
+                                    )}
                                     dataSource={paperSearchResults.items}
                                     renderItem={paper => (
                                         <Item>
@@ -157,6 +170,68 @@ const Search = (props: RouteComponentProps) => {
                     </Tabs>
                 ) : null}
             </Results>
+            {showHomePageContent ? (
+                <IntroText as="div">
+                    <p>
+                        The query capabilities of the explorer are quite simple. If you're trying to
+                        do a more comprehensive search, we'd suggest trying the tools below:
+                    </p>
+                    <SearchEngineList>
+                        <li>
+                            <a href="https://www.covidsearch.io/" rel="noopener">
+                                Covidex
+                            </a>
+                            <br />A CORD-19 Search Engine using NLP and IR Components by the{' '}
+                            <a href="https://uwaterloo.ca/">University of Waterloo</a> and{' '}
+                            <a href="https://www.nyu.edu/">NYU</a>
+                        </li>
+                        <li>
+                            <a href="http://cslab241.cs.aueb.gr:5000/" rel="noopener">
+                                AUEB NLP Group Covid-19 Search Engine
+                            </a>
+                            <br />
+                            An Experimental Document and Snippet Retrieval Search Engine for CORD-19
+                            by the{' '}
+                            <a href="http://nlp.cs.aueb.gr/" rel="noopener">
+                                AUEB's NLP Group
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://covidsearch.sinequa.com/" rel="nopener">
+                                Covid Search
+                            </a>
+                            <br />A CORD-19 Search engine from{' '}
+                            <a href="https://www.sinequa.com/" rel="noopener">
+                                Sinequa
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://cord19.vespa.ai/" rel="noopener">
+                                CORD-19 Search
+                            </a>
+                            <br />A CORD-19 Search Engine powered by{' '}
+                            <a href="https://vespa.ai/" rel="noopener">
+                                Vespa
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://covid19search.azurewebsites.net/" rel="noopener">
+                                Covid-19 Search
+                            </a>
+                            <br />A CORD-19 Search Engine powered by{' '}
+                            <a
+                                href="https://azure.microsoft.com/en-us/services/search/"
+                                rel="noopener">
+                                Azure Cognitive Search
+                            </a>
+                        </li>
+                    </SearchEngineList>
+                    If you have a tool that you'd like listed here,{' '}
+                    <a href="https://discourse.cord-19.semanticscholar.org/" rel="noopener">
+                        let us know.
+                    </a>
+                </IntroText>
+            ) : null}
         </Container>
     );
 };
@@ -197,6 +272,23 @@ const SearchRow = styled.div`
     grid-template-columns: 1fr min-content;
     align-items: center;
     gap: ${({ theme }) => theme.spacing.md};
+`;
+
+const SearchEngineList = styled.ul`
+    ${({ theme }) => `
+        margin: 0;
+        padding: 0 0 0 ${theme.spacing.xl};
+        list-style-type: disc;
+
+        li {
+            margin: ${theme.spacing.md} 0;
+        }
+
+        li a:first-child {
+            font-weight: bold;
+        }
+
+    `}
 `;
 
 export default Search;

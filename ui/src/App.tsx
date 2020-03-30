@@ -2,13 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
 import { BrowserRouter, Route, Link } from 'react-router-dom';
-import {
-    Header,
-    HeaderColumns,
-    Layout,
-    Content,
-    HeaderTitle
-} from '@allenai/varnish/components';
+import { Header, HeaderColumns, Layout, Content, HeaderTitle } from '@allenai/varnish/components';
 
 import Search from './pages/Search';
 import PaperDetail from './pages/PaperDetail';
@@ -33,7 +27,11 @@ const App = () => {
                                 <TitleLink to="/">CORD-19 Explorer</TitleLink>
                             </HeaderTitleWithPadding>
                             <div>
-                                <a href="https://discourse.cord-19.semanticscholar.org/" rel="noopener">Feedback</a>
+                                <a
+                                    href="https://discourse.cord-19.semanticscholar.org/"
+                                    rel="noopener">
+                                    Feedback
+                                </a>
                             </div>
                         </HeaderColumns>
                     </Header>
@@ -72,7 +70,7 @@ const SimpleLogo = styled.div`
     align-items: center;
     justify-content: center;
     color: #fff;
-    background: linear-gradient(90deg, #1857B6 0%, #0F3875 94.27%);
+    background: linear-gradient(90deg, #1857b6 0%, #0f3875 94.27%);
     margin: ${({ theme }) => `${theme.spacing.md} 0`};
     overflow: hidden;
 
@@ -80,8 +78,6 @@ const SimpleLogo = styled.div`
         display: block;
     }
 `;
-
-
 
 const HeaderTitleWithPadding = styled(HeaderTitle)`
     padding: ${({ theme }) => theme.spacing.md} 0;

@@ -1,16 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Icon } from 'antd';
-import { BodyBig, BodyJumbo } from '@allenai/varnish/components'
+import { BodyBig, BodyJumbo } from '@allenai/varnish/components';
 
 export const Error = () => (
     <ErrorMsg>
         <BodyJumbo>
             <Icon type="exclamation-circle" />
         </BodyJumbo>
-        <BodyBig>
-            Sorry, something went wrong.
-        </BodyBig>
+        <BodyBig>Sorry, something went wrong.</BodyBig>
     </ErrorMsg>
 );
 
