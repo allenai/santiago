@@ -79,7 +79,12 @@ def create_api() -> Blueprint:
             'query': {
                 'simple_query_string': {
                     'query': queryText,
-                    'all_fields': True
+                    'fields': [
+                        'metadata.title',
+                        'abstract.text',
+                        'body_text.text'
+                    ],
+                    'analyzer': 'case_insensitive_stemmed_tokens_no_stop'
                 }
             }
         }
@@ -179,7 +184,11 @@ def create_api() -> Blueprint:
             'query': {
                 'simple_query_string': {
                     'query': queryText,
-                    'all_fields': True
+                    'fields': [
+                        'title',
+                        'abstract'
+                    ],
+                    'analyzer': 'case_insensitive_stemmed_tokens_no_stop'
                 }
             }
         }
