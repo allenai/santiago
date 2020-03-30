@@ -95,7 +95,7 @@ const Search = (props: RouteComponentProps) => {
             {showHomePageContent ? (
                 <IntroText as="div">
                     <p>
-                        The <strong>CORD-19 explorer</strong> is a full-text search engine for the{' '}
+                        The <strong>CORD-19 Explorer</strong> is a full-text search engine for the{' '}
                         <a href="https://pages.semanticscholar.org/coronavirus-research">
                             COVID-19 Open Research Dataset
                         </a>
@@ -173,7 +173,7 @@ const Search = (props: RouteComponentProps) => {
             {showHomePageContent ? (
                 <IntroText as="div">
                     <p>
-                        The query capabilities of the explorer are quite simple. If you're trying to
+                        The query capabilities of the Explorer are quite simple. If you're trying to
                         do a more comprehensive search, we'd suggest trying the tools below:
                     </p>
                     <SearchEngineList>
@@ -245,6 +245,13 @@ const Search = (props: RouteComponentProps) => {
                                 DMIS Lab
                             </a>
                             {' '}of Korea University
+                        </li>
+                        <li>
+                            <a href="https://coronavirus.1science.com/search" rel="noopener">
+                                Coronavirus Research Repository
+                            </a><br />
+                            The Elsevier Coronavirus Research Repository, with scholarly articles
+                            on COVID-19, SARS, MERS and other coronaviruses
                         </li>
                     </SearchEngineList>
                     If you have a tool that you'd like listed here,{' '}
