@@ -86,11 +86,8 @@ def create_api() -> Blueprint:
         cluster = ClusterConfig.load_from_env()
         resp = requests.get(
             f'{cluster.origin}/{papers_index}/_search',
-            data=json.dumps(query),
-            auth=cluster.auth(),
-            headers = {
-                'Content-Type': 'application/json'
-            }
+            json=query,
+            auth=cluster.auth()
         )
         # TODO: It's unecessary to deserialize and then reserialize the data, but we do it
         # since jsonify takes care of some of the headers we'd need to set othewrise. We should
@@ -124,11 +121,8 @@ def create_api() -> Blueprint:
         cluster = ClusterConfig.load_from_env()
         resp = requests.get(
             f'{cluster.origin}/{meta_index}/_search',
-            data=json.dumps(query),
-            auth=cluster.auth(),
-            headers = {
-                'Content-Type': 'application/json'
-            }
+            json=query,
+            auth=cluster.auth()
         )
         return jsonify(resp.json()), resp.status_code
 
@@ -160,11 +154,8 @@ def create_api() -> Blueprint:
         }
         resp = requests.get(
             f'{cluster.origin}/{papers_index}/_search',
-            data=json.dumps(query),
-            auth=cluster.auth(),
-            headers = {
-                'Content-Type': 'application/json'
-            }
+            json=query,
+            auth=cluster.auth()
         )
         papers = [ doc['_source'] for doc in resp.json().get('hits', {}).get('hits', []) ]
         return jsonify(papers), resp.status_code
@@ -195,16 +186,13 @@ def create_api() -> Blueprint:
         cluster = ClusterConfig.load_from_env()
         resp = requests.get(
             f'{cluster.origin}/{meta_index}/_search',
-            data=json.dumps(query),
-            auth=cluster.auth(),
-            headers = {
-                'Content-Type': 'application/json'
-            }
+            json=query,
+            auth=cluster.auth()
         )
         return jsonify(resp.json()), resp.status_code
 
     @api.route('/meta/<string:id>')
-    def get_meta(id: str):
+    def get_meta_by_id(id: str):
         cluster = ClusterConfig.load_from_env()
         resp = requests.get(f'{cluster.origin}/{meta_index}/_doc/{id}', auth=cluster.auth())
         if request.args.get('download', None) is not None:
@@ -214,5 +202,30 @@ def create_api() -> Blueprint:
             })
         else:
             return jsonify(resp.json()), resp.status_code
+
+    @api.route('/meta')
+    def get_meta_by_cord_uid():
+        cord_uid = request.args.get("cord_uid", None)
+        if cord_uid is None:
+            return jsonify({ 'error': 'You must provide a cord_uid' }), 400
+        query = {
+            'query': {
+                'term': {
+                    'cord_uid': cord_uid
+                }
+            },
+            'size': 1
+        }
+        cluster = ClusterConfig.load_from_env()
+        resp = requests.get(
+            f'{cluster.origin}/{meta_index}/_search',
+            json=query,
+            auth=cluster.auth()
+        )
+        hits = resp.json().get('hits', {}).get('hits', [])
+        if len(hits) != 1:
+            return jsonify({ 'error': 'Not Found' }), 404
+        hit = hits[0]
+        return jsonify(hit['_source'])
 
     return api
