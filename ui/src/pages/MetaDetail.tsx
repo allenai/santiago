@@ -1,11 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router';
-import { Tabs } from '@allenai/varnish/components'
+import { Tabs } from '@allenai/varnish/components';
 import { Icon } from 'antd';
-import ReactJson from 'react-json-view'
+import ReactJson from 'react-json-view';
 
-import { Container, Error, Gap, MetadataDetails, MetadataSummary, LoadingIndicator } from '../components';
+import {
+    Container,
+    Error,
+    Gap,
+    MetadataDetails,
+    MetadataSummary,
+    LoadingIndicator
+} from '../components';
 import * as magellan from '../magellan';
 
 interface MetadataEntryIdRouteParams {
@@ -15,13 +22,16 @@ interface MetadataEntryIdRouteParams {
 const MetaDetail = (props: RouteComponentProps) => {
     const params = props.match.params as MetadataEntryIdRouteParams;
     const [meta, setMeta] = React.useState<magellan.MetadataEntry | undefined>();
-    const [ hasError, setHasError ] = React.useState(false);
+    const [hasError, setHasError] = React.useState(false);
     React.useEffect(() => {
         setHasError(false);
-        magellan.getMetaById(params.id).then(setMeta).catch(err => {
-            console.error('Error fetching metadata by id:', err);
-            setHasError(true);
-        });
+        magellan
+            .getMetaById(params.id)
+            .then(setMeta)
+            .catch(err => {
+                console.error('Error fetching metadata by id:', err);
+                setHasError(true);
+            });
     }, [params.id]);
     const isLoading = !meta;
     return (
@@ -41,8 +51,7 @@ const MetaDetail = (props: RouteComponentProps) => {
                             <Gap position="below" size="md">
                                 <TextRight>
                                     <a href={`/api/meta/${meta.id}?download`}>
-                                        <Icon type="download" />{" "}
-                                        Download JSON
+                                        <Icon type="download" /> Download JSON
                                     </a>
                                 </TextRight>
                             </Gap>

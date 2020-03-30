@@ -30,7 +30,7 @@ export class Query {
     static defaults = {
         PAGE_SIZE: 10,
         OFFSET: 0
-    }
+    };
 }
 
 function first<T>(maybeArr: T[] | T | undefined, defaultValue: T): T {

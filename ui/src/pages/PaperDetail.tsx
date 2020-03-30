@@ -4,9 +4,16 @@ import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Tabs } from '@allenai/varnish/components';
 import { Icon } from 'antd';
-import ReactJson from 'react-json-view'
+import ReactJson from 'react-json-view';
 
-import { Container, Error, Gap, PaperSummary, LoadingIndicator, MetadataDetails } from '../components';
+import {
+    Container,
+    Error,
+    Gap,
+    PaperSummary,
+    LoadingIndicator,
+    MetadataDetails
+} from '../components';
 import * as magellan from '../magellan';
 
 interface PaperIdRouteParams {
@@ -20,17 +27,19 @@ interface State {
 
 const PaperDetail = (props: RouteComponentProps) => {
     const params = props.match.params as PaperIdRouteParams;
-    const [ { paper, meta }, setState ] =
-        React.useState<State>({ paper: undefined, meta: undefined });
-    const [ hasError, setHasError ] = React.useState(false);
+    const [{ paper, meta }, setState] = React.useState<State>({
+        paper: undefined,
+        meta: undefined
+    });
+    const [hasError, setHasError] = React.useState(false);
     React.useEffect(() => {
         setHasError(false);
-        Promise.all([ magellan.getPaperById(params.id), magellan.getPaperMeta(params.id) ])
-               .then(([ paper, meta ]) => setState({ paper, meta }))
-               .catch(err => {
-                   console.error('Error fetching paper by id:', err);
-                   setHasError(true);
-               });
+        Promise.all([magellan.getPaperById(params.id), magellan.getPaperMeta(params.id)])
+            .then(([paper, meta]) => setState({ paper, meta }))
+            .catch(err => {
+                console.error('Error fetching paper by id:', err);
+                setHasError(true);
+            });
     }, [params.id]);
     const isLoading = !paper;
     return (
@@ -47,13 +56,17 @@ const PaperDetail = (props: RouteComponentProps) => {
                             <Tabs.TabPane tab="Metadata" key="meta">
                                 <Gap position="below" size="md">
                                     <Info>
-                                        <strong>{meta.total_results} matching metadata {meta.total_results === 1 ? 'entry' : 'entries'}</strong>
+                                        <strong>
+                                            {meta.total_results} matching metadata{' '}
+                                            {meta.total_results === 1 ? 'entry' : 'entries'}
+                                        </strong>
                                     </Info>
                                 </Gap>
                                 {meta.items.map(meta => (
                                     <Gap position="below" size="xl" key={meta.id}>
                                         <Gap position="below" size="md">
-                                            <strong>Metadata:</strong><br />
+                                            <strong>Metadata:</strong>
+                                            <br />
                                             <Link to={`/meta/${meta.id}`}>{meta.id}</Link>
                                         </Gap>
                                         <MetadataDetails meta={meta} hidePapers />
@@ -65,8 +78,7 @@ const PaperDetail = (props: RouteComponentProps) => {
                             <Gap position="below" size="md">
                                 <TextRight>
                                     <a href={`/api/paper/${paper.paper_id}?download`}>
-                                        <Icon type="download" />{" "}
-                                        Download JSON
+                                        <Icon type="download" /> Download JSON
                                     </a>
                                 </TextRight>
                             </Gap>
@@ -74,7 +86,7 @@ const PaperDetail = (props: RouteComponentProps) => {
                         </Tabs.TabPane>
                     </Tabs>
                 </>
-            ): null}
+            ) : null}
         </Container>
     );
 };
