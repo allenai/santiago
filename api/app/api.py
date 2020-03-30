@@ -143,7 +143,7 @@ def create_api() -> Blueprint:
         # above 10000, I think.
         max_ids = 1000
         if num_ids > max_ids:
-            return jsonify({ 'error': 'You can only specify up to 1000 ids'}), 400
+            return jsonify({ 'error': f'You can only specify up to {max_ids} ids'}), 400
         if num_ids == 0:
             return jsonify([])
         papers = []
@@ -236,5 +236,35 @@ def create_api() -> Blueprint:
             return jsonify({ 'error': 'Not Found' }), 404
         hit = hits[0]
         return jsonify(hit['_source'])
+
+    @api.route('/metas', methods=['POST', 'GET'])
+    def get_meta_entries():
+        if request.method == 'GET':
+            cord_uids = [ id for id in request.args.get('cord_uids', '').split(',') if id.strip() != '' ]
+        else:
+            cord_uids = request.json.get('cord_uids', [])
+        num_ids = len(cord_uids)
+        max_ids = 1000
+        if num_ids > max_ids:
+            return jsonify({ 'error': f'You can only specify up to {max_ids} ids'}), 400
+        if num_ids == 0:
+            return jsonify([])
+        papers = []
+        cluster = ClusterConfig.load_from_env()
+        query = {
+            'query': {
+                'terms': {
+                    'cord_uid': cord_uids
+                }
+            },
+            'size': max_ids
+        }
+        resp = requests.get(
+            f'{cluster.origin}/{meta_index}/_search',
+            json=query,
+            auth=cluster.auth()
+        )
+        meta_entries = [ doc['_source'] for doc in resp.json().get('hits', {}).get('hits', []) ]
+        return jsonify(meta_entries), resp.status_code
 
     return api
