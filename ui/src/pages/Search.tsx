@@ -235,6 +235,17 @@ const Search = (props: RouteComponentProps) => {
                                 Sketch Engine
                             </a>
                         </li>
+                        <li>
+                            <a href="http://covidsearch.korea.ac.kr/" rel="noopener">
+                                covidsearch
+                            </a>
+                            <br />
+                            Real-time question answering on 31K COVID-19 related articles by the{' '}
+                            <a href="https://dmis.korea.ac.kr/" rel="noopener">
+                                DMIS Lab
+                            </a>
+                            {' '}of Korea University
+                        </li>
                     </SearchEngineList>
                     If you have a tool that you'd like listed here,{' '}
                     <a href="https://discourse.cord-19.semanticscholar.org/" rel="noopener">
