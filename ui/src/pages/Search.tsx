@@ -4,6 +4,7 @@ import { useHistory, RouteComponentProps } from 'react-router';
 import { Tabs as VTabs, Input, BodyBig } from '@allenai/varnish/components';
 import { List, Icon, Popover } from 'antd';
 import { PaginationProps } from 'antd/lib/pagination';
+import { moreFeaturedToolsLink, featuredTools } from '../featured';
 
 import * as magellan from '../magellan';
 import { Container, Error, PaperSummary, MetadataSummary, LoadingIndicator } from '../components';
@@ -94,6 +95,7 @@ const Search = (props: RouteComponentProps) => {
         <Container>
             {showHomePageContent ? (
                 <IntroText as="div">
+                    <h2>Explore the Dataset</h2>
                     <p>
                         The <strong>CORD-19 Explorer</strong> is a full-text search engine for the{' '}
                         <a href="https://pages.semanticscholar.org/coronavirus-research">
@@ -103,9 +105,7 @@ const Search = (props: RouteComponentProps) => {
                         potential research efforts.
                     </p>
                     <p>
-                        If you have ideas for for how to improve the tool, or would like to
-                        contribute to the research effort, don't hesitate to join the{' '}
-                        <a href="https://discourse.cord-19.semanticscholar.org/">discussion</a>.
+                        <strong>Enter a search query to get started:</strong>
                     </p>
                 </IntroText>
             ) : null}
@@ -172,92 +172,39 @@ const Search = (props: RouteComponentProps) => {
             </Results>
             {showHomePageContent ? (
                 <IntroText as="div">
+                    <h3>Featured Tools</h3>
                     <p>
                         The query capabilities of the Explorer are quite simple. If you're trying to
-                        do a more comprehensive search, we'd suggest trying the tools below:
+                        do a more comprehensive search, we'd suggest trying the tools below.
+                    </p>
+                    <p>
+                        <strong>
+                            There's also have a comprehensive, user-editable list of tools{' '}
+                            <a href={moreFeaturedToolsLink} rel="noopener">
+                                here.
+                            </a>
+                        </strong>
                     </p>
                     <SearchEngineList>
-                        <li>
-                            <a href="https://www.covidsearch.io/" rel="noopener">
-                                Covidex
-                            </a>
-                            <br />A CORD-19 Search Engine using NLP and IR Components by the{' '}
-                            <a href="https://uwaterloo.ca/">University of Waterloo</a> and{' '}
-                            <a href="https://www.nyu.edu/">NYU</a>
-                        </li>
-                        <li>
-                            <a href="http://cslab241.cs.aueb.gr:5000/" rel="noopener">
-                                AUEB NLP Group Covid-19 Search Engine
-                            </a>
-                            <br />
-                            An Experimental Document and Snippet Retrieval Search Engine for CORD-19
-                            by the{' '}
-                            <a href="http://nlp.cs.aueb.gr/" rel="noopener">
-                                AUEB's NLP Group
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://covidsearch.sinequa.com/" rel="nopener">
-                                Covid Search
-                            </a>
-                            <br />A CORD-19 Search engine from{' '}
-                            <a href="https://www.sinequa.com/" rel="noopener">
-                                Sinequa
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://cord19.vespa.ai/" rel="noopener">
-                                CORD-19 Search
-                            </a>
-                            <br />A CORD-19 Search Engine powered by{' '}
-                            <a href="https://vespa.ai/" rel="noopener">
-                                Vespa
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://covid19search.azurewebsites.net/" rel="noopener">
-                                Covid-19 Search
-                            </a>
-                            <br />A CORD-19 Search Engine powered by{' '}
-                            <a
-                                href="https://azure.microsoft.com/en-us/services/search/"
-                                rel="noopener">
-                                Azure Cognitive Search
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://www.sketchengine.eu/covid19/" rel="noopener">
-                                Covid 19 Corpus
-                            </a>
-                            <br />
-                            The CORD-19 dataset loaded into the{' '}
-                            <a href="https://www.sketchengine.eu/" rel="noopener">
-                                Sketch Engine
-                            </a>
-                        </li>
-                        <li>
-                            <a href="http://covidsearch.korea.ac.kr/" rel="noopener">
-                                covidsearch
-                            </a>
-                            <br />
-                            Real-time question answering on 31K COVID-19 related articles by the{' '}
-                            <a href="https://dmis.korea.ac.kr/" rel="noopener">
-                                DMIS Lab
-                            </a>
-                            {' '}of Korea University
-                        </li>
-                        <li>
-                            <a href="https://coronavirus.1science.com/search" rel="noopener">
-                                Coronavirus Research Repository
-                            </a><br />
-                            The Elsevier Coronavirus Research Repository, with scholarly articles
-                            on COVID-19, SARS, MERS and other coronaviruses
-                        </li>
+                        {featuredTools.map(({ url, title, description }) => (
+                            <li key={url}>
+                                <a href={url} rel="noopener">
+                                    {title}
+                                </a>
+                                <br />
+                                {description}
+                            </li>
+                        ))}
                     </SearchEngineList>
-                    If you have a tool that you'd like listed here,{' '}
-                    <a href="https://discourse.cord-19.semanticscholar.org/" rel="noopener">
-                        let us know.
-                    </a>
+                    <p>
+                        <strong>
+                            See a list of additional tools, and add new ones ones{' '}
+                            <a href={moreFeaturedToolsLink} rel="noopener">
+                                here
+                            </a>
+                            .
+                        </strong>
+                    </p>
                 </IntroText>
             ) : null}
         </Container>
@@ -304,7 +251,7 @@ const SearchRow = styled.div`
 
 const SearchEngineList = styled.ul`
     ${({ theme }) => `
-        margin: 0;
+        margin: 0 0 ${theme.spacing.lg};
         padding: 0 0 0 ${theme.spacing.xl};
         list-style-type: disc;
 
