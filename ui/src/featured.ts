@@ -17,7 +17,7 @@ export const featuredTools = [
     {
         url: 'https://covidsearch.sinequa.com/',
         title: 'Covid Search',
-        description: 'A CORD-19 search engine from Sineque.'
+        description: 'A CORD-19 search engine from Sinequa.'
     },
     {
         url: 'https://cord19.vespa.ai/',
