@@ -3,7 +3,7 @@ export const moreFeaturedToolsLink =
 
 export const featuredTools = [
     {
-        url: 'https://coviz.allenai.org/',
+        url: 'https://coviz.apps.allenai.org/',
         title: 'CoViz',
         description:
             'A tool for exploring associations between concepts appearing in the COVID-19 Open Research Dataset.'
