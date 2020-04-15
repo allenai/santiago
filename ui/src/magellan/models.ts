@@ -55,7 +55,7 @@ export interface MetadataEntry {
     id: string;
     cord_uid: string;
     paper_ids: string[];
-    source: string;
+    source_x: string;
     title: string;
     doi: string;
     pmcid: string;

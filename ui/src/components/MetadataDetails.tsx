@@ -86,6 +86,10 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                     {meta.full_text_file}
                 </Gap>
             ) : null}
+            <Gap position="below" size="md">
+                <strong>Source:</strong><br />
+                {meta.source_x}
+            </Gap>
         </>
     );
 };
