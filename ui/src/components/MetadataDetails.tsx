@@ -87,7 +87,8 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                 </Gap>
             ) : null}
             <Gap position="below" size="md">
-                <strong>Source:</strong><br />
+                <strong>Source:</strong>
+                <br />
                 {meta.source_x}
             </Gap>
         </>

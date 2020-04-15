@@ -7,6 +7,7 @@ import { PaperTitle } from './PaperTitle';
 import { PaperAbstract } from './PaperAbstract';
 import { LinkButton } from './LinkButton';
 import { Gap } from './Gap';
+import { config } from '../config';
 
 interface Props {
     paper: Paper;
@@ -38,11 +39,13 @@ export const PaperSummary = ({ paper, disableLink }: Props) => {
                     <MaxLengthText maxLength={250}>{abstractText}</MaxLengthText>
                 )}
             </PaperAbstract>
-            <Gap position="above" size="md">
-                <LinkButton href={`https://semanticscholar.org/paper/${paper.paper_id}`}>
-                    View on Semantic Scholar
-                </LinkButton>
-            </Gap>
+            {config.ENABLE_S2_LINKS ? (
+                <Gap position="above" size="md">
+                    <LinkButton href={`https://semanticscholar.org/paper/${paper.paper_id}`}>
+                        View on Semantic Scholar
+                    </LinkButton>
+                </Gap>
+            ) : null}
         </>
     );
 };

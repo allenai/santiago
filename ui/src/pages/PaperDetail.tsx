@@ -11,10 +11,12 @@ import {
     Error,
     Gap,
     PaperSummary,
+    LinkButton,
     LoadingIndicator,
     MetadataDetails
 } from '../components';
 import * as magellan from '../magellan';
+import { config } from '../config';
 
 interface PaperIdRouteParams {
     id: string;
@@ -54,16 +56,16 @@ const PaperDetail = (props: RouteComponentProps) => {
                     <Tabs defaultActiveKey="meta">
                         {meta ? (
                             <Tabs.TabPane tab="Metadata" key="meta">
-                                <Gap position="below" size="md">
-                                    <Info>
-                                        <strong>
-                                            {meta.total_results} matching metadata{' '}
-                                            {meta.total_results === 1 ? 'entry' : 'entries'}
-                                        </strong>
-                                    </Info>
-                                </Gap>
                                 {meta.items.map(meta => (
                                     <Gap position="below" size="xl" key={meta.id}>
+                                        {!config.ENABLE_S2_LINKS && meta.doi ? (
+                                            <Gap position="below" size="md">
+                                                <LinkButton
+                                                    href={`https://api.semanticscholar.org/${meta.doi}`}>
+                                                    View Paper
+                                                </LinkButton>
+                                            </Gap>
+                                        ) : null}
                                         <Gap position="below" size="md">
                                             <strong>Metadata:</strong>
                                             <br />
@@ -93,17 +95,6 @@ const PaperDetail = (props: RouteComponentProps) => {
 
 const TextRight = styled.div`
     text-align: right;
-`;
-
-const Info = styled.div`
-    ${({ theme }) => `
-        background: ${theme.palette.background.info};
-        border: 1px solid ${theme.palette.border.info};
-        color: ${theme.palette.text.info};
-        padding: ${theme.spacing.sm};
-        font-size: ${theme.typography.bodySmall.fontSize};
-        border-radius: 4px;
-    `}
 `;
 
 export default PaperDetail;

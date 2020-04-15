@@ -8,6 +8,7 @@ import { PaperTitle } from './PaperTitle';
 import { PaperAbstract } from './PaperAbstract';
 import { Gap } from './Gap';
 import { LinkButton } from './LinkButton';
+import { config } from '../config';
 
 interface Props {
     meta: MetadataEntry;
@@ -30,7 +31,7 @@ export const MetadataSummary = ({ meta, disableLink }: Props) => {
             <PaperAbstract>
                 <MaxLengthText maxLength={250}>{meta.abstract}</MaxLengthText>
             </PaperAbstract>
-            {meta.paper_ids.length > 0 ? (
+            {config.ENABLE_S2_LINKS && meta.paper_ids.length > 0 ? (
                 <ButtonList position="above" size="md">
                     {meta.paper_ids.map(pid => (
                         <LinkButton key={pid} href={`https://semanticscholar.org/paper/${pid}`}>
@@ -38,6 +39,12 @@ export const MetadataSummary = ({ meta, disableLink }: Props) => {
                         </LinkButton>
                     ))}
                 </ButtonList>
+            ) : meta.doi ? (
+                <Gap position="above" size="md">
+                    <LinkButton href={`https://api.semanticscholar.org/${meta.doi}`}>
+                        View Paper
+                    </LinkButton>
+                </Gap>
             ) : null}
         </>
     );
