@@ -5,6 +5,8 @@ import { MaxLengthText } from '@allenai/varnish/components/MaxLengthText';
 import { Paper } from '../magellan';
 import { PaperTitle } from './PaperTitle';
 import { PaperAbstract } from './PaperAbstract';
+import { LinkButton } from './LinkButton';
+import { Gap } from './Gap';
 
 interface Props {
     paper: Paper;
@@ -36,6 +38,11 @@ export const PaperSummary = ({ paper, disableLink }: Props) => {
                     <MaxLengthText maxLength={250}>{abstractText}</MaxLengthText>
                 )}
             </PaperAbstract>
+            <Gap position="above" size="md">
+                <LinkButton href={`https://semanticscholar.org/paper/${paper.paper_id}`}>
+                    View on Semantic Scholar
+                </LinkButton>
+            </Gap>
         </>
     );
 };

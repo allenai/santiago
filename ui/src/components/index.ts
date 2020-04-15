@@ -10,3 +10,4 @@ export * from './CORD19Logo';
 export * from './MetadataDetails';
 export * from './Footer';
 export * from './Error';
+export * from './LinkButton';

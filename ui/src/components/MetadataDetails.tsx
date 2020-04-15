@@ -28,13 +28,6 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                             {meta.doi}
                         </a>
                     </Gap>
-                    <Gap position="below" size="md">
-                        <strong>Paper Link</strong>
-                        <br />
-                        <a href={`https://api.semanticscholar.org/${meta.doi}`}>
-                            https://api.semanticscholar.org/{meta.doi}
-                        </a>
-                    </Gap>
                 </>
             ) : null}
             {meta.url ? (
@@ -86,11 +79,11 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                     {meta.license}
                 </Gap>
             ) : null}
-            {meta.collection ? (
+            {meta.full_text_file ? (
                 <Gap position="below" size="md">
-                    <strong>Collection (dataset directory):</strong>
+                    <strong>Full Text File:</strong>
                     <br />
-                    {meta.collection}
+                    {meta.full_text_file}
                 </Gap>
             ) : null}
         </>
