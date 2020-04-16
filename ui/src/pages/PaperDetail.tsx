@@ -61,7 +61,7 @@ const PaperDetail = (props: RouteComponentProps) => {
                                         {!config.ENABLE_S2_LINKS && meta.doi ? (
                                             <Gap position="below" size="md">
                                                 <LinkButton
-                                                    href={`https://api.semanticscholar.org/${meta.doi}`}>
+                                                    href={`/api/r/${meta.doi}`}>
                                                     View Paper
                                                 </LinkButton>
                                             </Gap>

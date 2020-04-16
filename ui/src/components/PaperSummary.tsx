@@ -41,8 +41,8 @@ export const PaperSummary = ({ paper, disableLink }: Props) => {
             </PaperAbstract>
             {config.ENABLE_S2_LINKS ? (
                 <Gap position="above" size="md">
-                    <LinkButton href={`https://semanticscholar.org/paper/${paper.paper_id}`}>
-                        View on Semantic Scholar
+                    <LinkButton href={`/api/r/${paper.paper_id}`}>
+                        View Paper
                     </LinkButton>
                 </Gap>
             ) : null}

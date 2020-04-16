@@ -2,7 +2,7 @@ import json
 import requests
 import os
 
-from flask import Flask, Blueprint, jsonify, request, current_app, Response
+from flask import Flask, Blueprint, jsonify, request, current_app, Response, redirect
 from random import randint
 from time import sleep
 from dataclasses import dataclass, asdict
@@ -112,8 +112,7 @@ def create_api() -> Blueprint:
         else:
             return jsonify(resp.json()), resp.status_code
 
-    @api.route('/paper/<string:id>/meta')
-    def get_paper_metadata(id: str):
+    def find_meta_by_paper_id(id: str):
         query = {
             'query': {
                 'term': {
@@ -129,7 +128,12 @@ def create_api() -> Blueprint:
             json=query,
             auth=cluster.auth()
         )
-        return jsonify(resp.json()), resp.status_code
+        return resp.json(), resp.status_code
+
+    @api.route('/paper/<string:id>/meta')
+    def get_paper_metadata(id: str):
+        meta, status = find_meta_by_paper_id(id)
+        return jsonify(meta), status
 
     @api.route('/papers', methods=['POST', 'GET'])
     def get_papers():
@@ -200,23 +204,22 @@ def create_api() -> Blueprint:
         )
         return jsonify(resp.json()), resp.status_code
 
-    @api.route('/meta/<string:id>')
-    def get_meta_by_id(id: str):
+    def find_meta_by_id(id: str):
         cluster = ClusterConfig.load_from_env()
         resp = requests.get(f'{cluster.origin}/{meta_index}/_doc/{id}', auth=cluster.auth())
+        return resp.json(), resp.status_code
+
+    @api.route('/meta/<string:id>')
+    def get_meta_by_id(id: str):
+        doc, status = find_meta_by_id(id)
         if request.args.get('download', None) is not None:
-            doc = resp.json()
             return Response(json.dumps(doc['_source']), mimetype='application/json', headers={
                 'Content-Disposition': f'attachment; filename={id}.json'
             })
         else:
-            return jsonify(resp.json()), resp.status_code
+            return jsonify(doc), status
 
-    @api.route('/meta')
-    def get_meta_by_cord_uid():
-        cord_uid = request.args.get("cord_uid", None)
-        if cord_uid is None:
-            return jsonify({ 'error': 'You must provide a cord_uid' }), 400
+    def find_meta_by_cord_uid(cord_uid):
         query = {
             'query': {
                 'term': {
@@ -231,7 +234,15 @@ def create_api() -> Blueprint:
             json=query,
             auth=cluster.auth()
         )
-        hits = resp.json().get('hits', {}).get('hits', [])
+        return resp.json(), resp.status_code
+
+    @api.route('/meta')
+    def get_meta_by_cord_uid():
+        cord_uid = request.args.get("cord_uid", None)
+        if cord_uid is None:
+            return jsonify({ 'error': 'You must provide a cord_uid' }), 400
+        results, _ = find_meta_by_cord_uid(cord_uid)
+        hits = results.get('hits', {}).get('hits', [])
         if len(hits) != 1:
             return jsonify({ 'error': 'Not Found' }), 404
         hit = hits[0]
@@ -266,5 +277,44 @@ def create_api() -> Blueprint:
         )
         meta_entries = [ doc['_source'] for doc in resp.json().get('hits', {}).get('hits', []) ]
         return jsonify(meta_entries), resp.status_code
+
+    @api.route('/r/<string:id>')
+    def redir(id: str):
+        # If it's 40 characters it's probably a paper id.
+        id_len = len(id)
+        if id_len == 40:
+            results, _ = find_meta_by_paper_id(id)
+            hits = results.get('hits', {}).get('hits', [])
+            if len(hits) > 0:
+                # If we've got a DOI, use that, so that S2 can determine where to send
+                # the user.
+                first = hits[0].get('_source', {})
+                doi = first.get('doi')
+                if doi is not None:
+                    return redirect(f'https://api.semanticscholar.org/{doi}')
+            # Fallback to the paper SHA. This might not work, as it might not be in the corpus
+            # yet.
+            return redirect(f'https://api.semanticscholar.org/{id}')
+        else:
+            # It's probably the cord_uid. Try to find the metadata associated with it.
+            if id_len == 8:
+                results, _ = find_meta_by_cord_uid(id)
+            # Otherwise assume it's a metadata id
+            else:
+                results, _ = find_meta_by_id(id)
+            hits = results.get('hits', {}).get('hits', [])
+            if len(hits) > 0:
+                # Again, prefer the DOI
+                first = hits[0].get('_source', {})
+                doi = first.get('doi')
+                if doi is not None:
+                    return redirect(f'https://api.semanticscholar.org/{doi}')
+                # But if there's no DOI use the first paper SHA
+                paper_ids = first.get('paper_ids', [])
+                if len(paper_ids) > 0:
+                    pid = paper_ids[0]
+                    return redirect(f'https://api.semanticscholar.org/{pid}')
+                # No DOI, no SHA, there's nothing we can do sailor.
+                return jsonify({ 'error': 'Not Found' }), 404
 
     return api

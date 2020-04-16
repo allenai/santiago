@@ -34,8 +34,8 @@ export const MetadataSummary = ({ meta, disableLink }: Props) => {
             {config.ENABLE_S2_LINKS && meta.paper_ids.length > 0 ? (
                 <ButtonList position="above" size="md">
                     {meta.paper_ids.map(pid => (
-                        <LinkButton key={pid} href={`https://semanticscholar.org/paper/${pid}`}>
-                            View on Semantic Scholar
+                        <LinkButton key={pid} href={`/api/r/${pid}`}>
+                            View Paper
                         </LinkButton>
                     ))}
                 </ButtonList>
