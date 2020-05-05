@@ -289,6 +289,9 @@ def create_api() -> Blueprint:
                 # If we've got a DOI, use that, so that S2 can determine where to send
                 # the user.
                 first = hits[0].get('_source', {})
+                arxiv_id = first.get('arxiv_id')
+                if arxiv_id is not None:
+                    return redirect(f'https://api.semanticscholar.org/arxiv:{arxiv_id}')
                 doi = first.get('doi')
                 if doi is not None:
                     return redirect(f'https://api.semanticscholar.org/{doi}')
@@ -306,6 +309,8 @@ def create_api() -> Blueprint:
             if len(hits) > 0:
                 # Again, prefer the DOI
                 first = hits[0].get('_source', {})
+                if arxiv_id is not None:
+                    return redirect(f'https://api.semanticscholar.org/arxiv:{arxiv_id}')
                 doi = first.get('doi')
                 if doi is not None:
                     return redirect(f'https://api.semanticscholar.org/{doi}')
