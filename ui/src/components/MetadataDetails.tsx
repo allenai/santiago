@@ -39,6 +39,15 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                     </a>
                 </Gap>
             ) : null}
+            {meta.arxiv_id ? (
+                 <Gap position="below" size="md">
+                    <strong>ArXiv Link:</strong>
+                    <br />
+                    <a href={`https://arxiv.org/abs/${meta.arxiv_id}`} rel="noopener">
+                        {meta.arxiv_id}
+                    </a>
+                </Gap>
+            ) : null}
             {nonEmptyPaperIds.length > 0 ? (
                 <Gap position="below" size="md">
                     <strong>Papers:</strong>

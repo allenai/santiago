@@ -67,6 +67,7 @@ export interface MetadataEntry {
     journal: string;
     msft_academic_paper_id: string;
     who_covidence_number: string;
+    arxiv_id: string;
     has_pdf_parse: boolean;
     has_pmc_xml_parse: boolean;
     full_text_file: string;
