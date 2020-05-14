@@ -65,11 +65,10 @@ export interface MetadataEntry {
     publish_time: string;
     authors: string[];
     journal: string;
-    msft_academic_paper_id: string;
-    who_covidence_number: string;
+    mag_id: string;
+    who_covidence_id: string;
     arxiv_id: string;
-    has_pdf_parse: boolean;
-    has_pmc_xml_parse: boolean;
-    full_text_file: string;
+    pdf_json_files: string[];
+    pmc_json_files: string[];
     url: string;
 }

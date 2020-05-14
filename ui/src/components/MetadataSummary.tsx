@@ -39,13 +39,13 @@ export const MetadataSummary = ({ meta, disableLink }: Props) => {
                         </LinkButton>
                     ))}
                 </ButtonList>
-            ) : meta.doi ? (
+            ) : (
                 <Gap position="above" size="md">
-                    <LinkButton href={`https://api.semanticscholar.org/${meta.doi}`}>
+                    <LinkButton href={`/api/r/${meta.id}`}>
                         View Paper
                     </LinkButton>
                 </Gap>
-            ) : null}
+            )}
         </>
     );
 };

@@ -70,14 +70,14 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                     </a>
                 </Gap>
             ) : null}
-            {meta.msft_academic_paper_id ? (
+            {meta.mag_id ? (
                 <Gap position="below" size="md">
                     <strong>MSFT Academic Search:</strong>
                     <br />
                     <a
-                        href={`https://academic.microsoft.com/paper/${meta.msft_academic_paper_id}`}
+                        href={`https://academic.microsoft.com/paper/${meta.mag_id}`}
                         rel="noopener">
-                        https://academic.microsoft.com/paper/{meta.msft_academic_paper_id}
+                        https://academic.microsoft.com/paper/{meta.mag_id}
                     </a>
                 </Gap>
             ) : null}
@@ -86,13 +86,6 @@ export const MetadataDetails = ({ meta, hidePapers }: Props) => {
                     <strong>License:</strong>
                     <br />
                     {meta.license}
-                </Gap>
-            ) : null}
-            {meta.full_text_file ? (
-                <Gap position="below" size="md">
-                    <strong>Full Text File:</strong>
-                    <br />
-                    {meta.full_text_file}
                 </Gap>
             ) : null}
             <Gap position="below" size="md">

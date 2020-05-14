@@ -302,10 +302,11 @@ def create_api() -> Blueprint:
             # It's probably the cord_uid. Try to find the metadata associated with it.
             if id_len == 8:
                 results, _ = find_meta_by_cord_uid(id)
+                hits = results.get('hits', {}).get('hits', [])
             # Otherwise assume it's a metadata id
             else:
-                results, _ = find_meta_by_id(id)
-            hits = results.get('hits', {}).get('hits', [])
+                meta, _ = find_meta_by_id(id)
+                hits = [ meta ]
             if len(hits) > 0:
                 # Again, prefer the DOI
                 first = hits[0].get('_source', {})
