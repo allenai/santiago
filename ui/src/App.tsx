@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
-import { Header, HeaderColumns, Layout, Content, BodyJumbo, BodyBig, HeaderTitle } from '@allenai/varnish/components';
+import { Header, Input, HeaderColumns, Layout, Content, BodyJumbo, BodyBig, HeaderTitle } from '@allenai/varnish/components';
 
 import { trackPageView } from './ga';
 import { CORD19Logo, Footer } from './components';
@@ -28,15 +28,21 @@ const App = () => {
                                 The <a href="https://www.semanticscholar.org/cord19">CORD-19</a> dataset
                                 has been fully incorporated into
                                 {" "}<a href="https://www.semanticscholar.org">Semantic Scholar</a>.
-                                You can <a href="https://www.semanticscholar.org/search?q=COVID+19">search</a>
-                                {" "}for COVID related papers, authors and more there.
+                                Enter a query to search for papers, authors and more:
                             </p>
                         </BodyJumbo>
-                        <BodyBig>
-                            If you'd like to explore the dataset, visit the
-                            {" "}<a href="https://open.quiltdata.com/b/ai2-semanticscholar-cord-19" rel="noopener">
-                                dataset on Quilt</a>.
-                        </BodyBig>
+                        <form method="get" action="https://www.semanticscholar.org/search">
+                            <Input.Search
+                                name="q"
+                                placeholder="Search Semantic Scholar…" />
+                        </form>
+                        <SpaceAbove>
+                            <BodyBig>
+                                If you'd like to explore the dataset, you can use
+                                {" "}<a href="https://open.quiltdata.com/b/ai2-semanticscholar-cord-19" rel="noopener">
+                                Quilt</a>.
+                            </BodyBig>
+                        </SpaceAbove>
                     </Copy>
                 </Content>
                 <Footer />
@@ -85,6 +91,10 @@ const HeaderTitleWithPadding = styled(HeaderTitle)`
 // "Semantic Scholar".
 const Copy = styled.div`
     max-width: 82ch;
+`;
+
+const SpaceAbove = styled.div`
+    margin-top: ${({ theme }) => theme.spacing.md};
 `;
 
 export default App;
