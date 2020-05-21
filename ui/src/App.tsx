@@ -1,49 +1,47 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
-import { Header, HeaderColumns, Layout, Content, HeaderTitle } from '@allenai/varnish/components';
+import { Header, HeaderColumns, Layout, Content, BodyJumbo, BodyBig, HeaderTitle } from '@allenai/varnish/components';
 
-import Search from './pages/Search';
-import PaperDetail from './pages/PaperDetail';
-import MetaDetail from './pages/MetaDetail';
 import { trackPageView } from './ga';
 import { CORD19Logo, Footer } from './components';
 
 const App = () => {
     return (
-        <BrowserRouter>
-            <Route path="/">
-                <GoogleAnalytics />
-                <Layout bgcolor="white">
-                    <Header>
-                        <HeaderColumns gridTemplateColumns="min-content auto min-content">
-                            <TitleLink to="/">
-                                <SimpleLogo>
-                                    <CORD19Logo />
-                                </SimpleLogo>
-                            </TitleLink>
-                            <HeaderTitleWithPadding>
-                                <TitleLink to="/">CORD-19 Explorer</TitleLink>
-                            </HeaderTitleWithPadding>
-                            <div>
-                                <a
-                                    href="https://discourse.cord-19.semanticscholar.org/"
-                                    rel="noopener">
-                                    Feedback
-                                </a>
-                            </div>
-                        </HeaderColumns>
-                    </Header>
-                    <Content>
-                        <Route path="/" component={Search} exact />
-                        <Route path="/paper/:id" component={PaperDetail} exact />
-                        <Route path="/meta/:id" component={MetaDetail} exact />
-                    </Content>
-                    <Footer />
-                </Layout>
-            </Route>
-        </BrowserRouter>
+        <>
+            <GoogleAnalytics />
+            <Layout bgcolor="white">
+                <Header>
+                    <HeaderColumns gridTemplateColumns="min-content auto min-content">
+                        <SimpleLogo>
+                            <CORD19Logo />
+                        </SimpleLogo>
+                        <HeaderTitleWithPadding>
+                            CORD-19 Explorer
+                        </HeaderTitleWithPadding>
+                    </HeaderColumns>
+                </Header>
+                <Content>
+                    <Copy>
+                        <BodyJumbo>
+                            <p>
+                                The <a href="https://www.semanticscholar.org/cord19">CORD-19</a> dataset
+                                has been fully incorporated into
+                                {" "}<a href="https://www.semanticscholar.org">Semantic Scholar</a>.
+                                You can <a href="https://www.semanticscholar.org/search?q=COVID+19">search</a>
+                                {" "}for COVID related papers, authors and more there.
+                            </p>
+                        </BodyJumbo>
+                        <BodyBig>
+                            If you'd like to explore the dataset, visit the
+                            {" "}<a href="https://open.quiltdata.com/b/ai2-semanticscholar-cord-19" rel="noopener">
+                                dataset on Quilt</a>.
+                        </BodyBig>
+                    </Copy>
+                </Content>
+                <Footer />
+            </Layout>
+        </>
     );
 };
 
@@ -83,16 +81,10 @@ const HeaderTitleWithPadding = styled(HeaderTitle)`
     padding: ${({ theme }) => theme.spacing.md} 0;
 `;
 
-const TitleLink = styled(Link)`
-    ${({ theme }) => `
-        && {
-            &,
-            &:hover {
-                color: ${theme.palette.text.primary};
-                text-decoration: none;
-            }
-        }
-    `}
+// Restrict the copy width so it's not hard to read, but do so such that it breaks after
+// "Semantic Scholar".
+const Copy = styled.div`
+    max-width: 82ch;
 `;
 
 export default App;
