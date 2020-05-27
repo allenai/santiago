@@ -2,17 +2,6 @@ version: '3'
 services:
     sonar:
         build: ./sonar
-    api:
-        build: ./api
-        volumes:
-            - ./api:/usr/local/src/skiff/app/api
-            - ./secrets:/secrets
-            - ./config:/config
-        environment:
-            # This ensures that errors are printed as they occur, which
-            # makes debugging easier.
-            - PYTHONUNBUFFERED=1
-            - LOG_LEVEL=DEBUG
     ui:
         build: ./ui
         # We can't mount the entire UI directory, since the `node_modules`
@@ -26,17 +15,7 @@ services:
             - ./ui/tsconfig.json:/usr/local/src/skiff/app/ui/tsconfig.json
             - ./ui/yarn.lock:/usr/local/src/skiff/app/ui/yarn.lock
         tty: true
-    elasticsearch:
-        image: elasticsearch:7.6.1
-        environment:
-            - discovery.type=single-node
-        volumes:
-            - index:/var/lib/elasticsearch/data
-        ports:
-            - 9200:9200
     proxy:
         build: ./proxy
         ports:
             - 8080:80
-volumes:
-    index:

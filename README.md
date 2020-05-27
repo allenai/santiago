@@ -1,3 +1,8 @@
+# ⚠️  This Package is Deprecated
+
+The CORD-19 dataset has been fully incorporated into Semantic Scholar, please
+[search there](https://semanticscholar.org) instead.
+
 # Santiago: A UI for Exploring the CORD-19 Dataset
 
 A UI for exploring the [CORD-19](https://pages.semanticscholar.org/coronavirus-research) dataset

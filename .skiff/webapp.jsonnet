@@ -1,9 +1,6 @@
 local config = import '../skiff.json';
 
-function(
-    apiImage, proxyImage, cause, sha, env='staging', branch='', repo='',
-    buildId=''
-)
+function(proxyImage, cause, sha, env='staging', branch='', repo='', buildId='')
     local topLevelDomain = '.apps.allenai.org';
     local hosts =
         if env == 'prod' then
@@ -44,18 +41,12 @@ function(
     };
 
     local proxyPort = 80;
-    local apiPort = 8000;
 
     local proxyHealthCheck = {
         port: proxyPort,
         scheme: 'HTTP'
     };
-
-    local apiHealthCheck = {
-        port: apiPort,
-        scheme: 'HTTP'
-    };
-
+    
     local namespace = {
         apiVersion: 'v1',
         kind: 'Namespace',
@@ -161,47 +152,6 @@ function(
                         }
                     ],
                     containers: [
-                        {
-                            name: fullyQualifiedName + '-api',
-                            image: apiImage,
-                            args: [ 'app/start.py', '--prod' ],
-                            readinessProbe: {
-                                httpGet: apiHealthCheck + {
-                                    path: '/?check=readiness_probe'
-                                },
-                                periodSeconds: 10,
-                                failureThreshold: 3
-                            },
-                            livenessProbe: {
-                                httpGet: apiHealthCheck + {
-                                    path: '/?check=liveness_probe'
-                                },
-                                periodSeconds: 10,
-                                failureThreshold: 9,
-                                initialDelaySeconds: 30
-                            },
-                            resources: {
-                                requests: {
-                                    cpu: '0.3',
-                                    memory: '500Mi'
-                                },
-                                limits: {
-                                    memory: '1Gi'
-                                }
-                            },
-                            volumeMounts: [
-                                {
-                                    name: fullyQualifiedName + '-es-creds',
-                                    mountPath: '/secrets',
-                                    readOnly: true
-                                },
-                                {
-                                    name: fullyQualifiedName + '-es-config',
-                                    mountPath: '/config',
-                                    readOnly: true
-                                }
-                            ]
-                        },
                         {
                             name: fullyQualifiedName + '-proxy',
                             image: proxyImage,
