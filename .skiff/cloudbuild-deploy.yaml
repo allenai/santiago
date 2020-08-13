@@ -1,3 +1,4 @@
+steps:
 - id: 'pull'
   name: 'gcr.io/cloud-builders/docker'
   entrypoint: '/bin/bash'
