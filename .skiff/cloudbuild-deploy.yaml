@@ -1,76 +1,25 @@
-# This file tells Google Cloud Build how to deploy the application.
-# It can be attached to a variety of triggers, the default being whenever
-# someone merges changes to the `master` branch.
-steps:
-# Pull down the latest versions of each Docker image, so the build is faster.
-- id: 'ui.pull'
+- id: 'pull'
   name: 'gcr.io/cloud-builders/docker'
   entrypoint: '/bin/bash'
   args: [
     '-c',
-    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest || exit 0'
+    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME:latest || exit 0'
   ]
-  waitFor: [ '-' ]
-- id: 'proxy.pull'
-  name: 'gcr.io/cloud-builders/docker'
-  entrypoint: '/bin/bash'
-  args: [
-    '-c',
-    'docker pull gcr.io/$PROJECT_ID/$REPO_NAME-proxy:latest || exit 0'
-  ]
-  waitFor: [ '-' ]
-# Build docker images for each piece of the puzzle
-- id: 'ui.build'
+- id: 'build'
   name: 'gcr.io/cloud-builders/docker'
   args: [
     'build',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
-    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME:latest',
+    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA',
+    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME:latest',
     '.',
-    '--build-arg', 'NODE_ENV=production',
-    '--build-arg', 'BABEL_ENV=production',
-    '--build-arg', 'GA_UA=$_REACT_APP_GA_UA'
   ]
-  waitFor: [ 'ui.pull' ]
-  dir: 'ui'
-- id: 'ui.dist.create'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'create',
-    '--name', '$REPO_NAME-ui',
-    'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
-  ]
-  waitFor: [ 'ui.build' ]
-  dir: 'ui'
-- id: 'ui.dist.cp'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'cp',
-    '$REPO_NAME-ui:/usr/local/src/skiff/app/ui/build',
-    '/workspace/proxy/dist'
-  ]
-  waitFor: ['ui.dist.create']
-- id: 'proxy.build'
-  name: 'gcr.io/cloud-builders/docker'
-  args: [
-    'build',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:latest',
-    '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA',
-    '--cache-from', 'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:latest',
-    '.',
-    '--build-arg', 'CONF_FILE=prod.conf'
-  ]
-  waitFor: [ 'ui.dist.cp', 'proxy.pull' ]
-  dir: 'proxy'
-- id: 'proxy.push'
+- id: 'push'
   name: 'gcr.io/cloud-builders/docker'
   args: [
     'push',
-    'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA'
+    'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA'
   ]
-  waitFor: [ 'proxy.build' ]
-# Generate our Kubernetes configuration
 - id: 'config'
   name: 'gcr.io/ai2-reviz/jsonnet'
   args: [
@@ -78,7 +27,7 @@ steps:
     '-y',
     '--output-file', './webapp.yaml',
     '--tla-str', 'env=$_ENV',
-    '--tla-str', 'proxyImage=gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA',
+    '--tla-str', 'image=gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA',
     '--tla-str', 'sha=$COMMIT_SHA',
     '--tla-str', 'cause=Automated Skiff Deploy SHA:$COMMIT_SHA BUILD:$BUILD_ID',
     '--tla-str', 'branch=$BRANCH_NAME',
@@ -99,10 +48,8 @@ steps:
 substitutions:
   _ENV: staging
 images: [
-  'gcr.io/$PROJECT_ID/$REPO_NAME-ui:$COMMIT_SHA',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-ui:latest',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:$COMMIT_SHA',
-  'gcr.io/$PROJECT_ID/$REPO_NAME-proxy:latest'
+  'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA',
+  'gcr.io/$PROJECT_ID/$REPO_NAME:latest'
 ]
 artifacts:
   objects:

@@ -1,6 +1,6 @@
 local config = import '../skiff.json';
 
-function(proxyImage, cause, sha, env='staging', branch='', repo='', buildId='')
+function(image, cause, sha, env='staging', branch='', repo='', buildId='')
     local topLevelDomain = '.apps.allenai.org';
     local hosts =
         if env == 'prod' then
@@ -8,13 +8,7 @@ function(proxyImage, cause, sha, env='staging', branch='', repo='', buildId='')
         else
             [ config.appName + '.' + env + topLevelDomain ];
 
-    local replicas = (
-        if env == 'prod' then
-            2
-        else
-            1
-    );
-
+    local replicas = 1;
     local namespaceName = config.appName;
     local fullyQualifiedName = config.appName + '-' + env;
 
@@ -40,13 +34,13 @@ function(proxyImage, cause, sha, env='staging', branch='', repo='', buildId='')
         "apps.allenai.org/build": buildId
     };
 
-    local proxyPort = 80;
+    local port = 80;
 
-    local proxyHealthCheck = {
-        port: proxyPort,
+    local healthCheck = {
+        port: port,
         scheme: 'HTTP'
     };
-    
+
     local namespace = {
         apiVersion: 'v1',
         kind: 'Namespace',
@@ -84,7 +78,7 @@ function(proxyImage, cause, sha, env='staging', branch='', repo='', buildId='')
                             {
                                 backend: {
                                     serviceName: fullyQualifiedName,
-                                    servicePort: proxyPort
+                                    serviceport: port
                                 }
                             }
                         ]
@@ -137,32 +131,18 @@ function(proxyImage, cause, sha, env='staging', branch='', repo='', buildId='')
                             ]
                         },
                     },
-                    volumes: [
-                        {
-                            name: fullyQualifiedName + '-es-creds',
-                            secret: {
-                                secretName: fullyQualifiedName + '-es-creds'
-                            }
-                        },
-                        {
-                            name: fullyQualifiedName + '-es-config',
-                            configMap: {
-                                name: fullyQualifiedName + '-es-config'
-                            }
-                        }
-                    ],
                     containers: [
                         {
-                            name: fullyQualifiedName + '-proxy',
-                            image: proxyImage,
+                            name: fullyQualifiedName,
+                            image: image,
                             readinessProbe: {
-                                httpGet: proxyHealthCheck + {
+                                httpGet: healthCheck + {
                                     path: '/?check=rdy'
                                 }
                             },
                             livenessProbe: {
                                 failureThreshold: 6,
-                                httpGet: proxyHealthCheck + {
+                                httpGet: healthCheck + {
                                     path: '/?check=live'
                                 }
                             },
@@ -192,7 +172,7 @@ function(proxyImage, cause, sha, env='staging', branch='', repo='', buildId='')
             selector: labels,
             ports: [
                 {
-                    port: proxyPort,
+                    port: port,
                     name: 'http'
                 }
             ]
