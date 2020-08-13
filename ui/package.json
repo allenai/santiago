@@ -79,7 +79,7 @@
   "dependencies": {
     "@allenai/varnish": "0.8.13",
     "antd": "^3.23.2",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.19",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-json-view": "^1.19.1",
