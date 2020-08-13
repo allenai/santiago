@@ -78,7 +78,7 @@ function(image, cause, sha, env='staging', branch='', repo='', buildId='')
                             {
                                 backend: {
                                     serviceName: fullyQualifiedName,
-                                    serviceport: port
+                                    servicePort: port
                                 }
                             }
                         ]
